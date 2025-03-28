@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MegaPersonal - Detalhes do Cliente</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #db7f34;
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .logo h1 {
+            margin: 0;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        .user-info a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+        }
+        .user-info a:hover {
+            text-decoration: underline;
+        }
+        .navbar {
+            background-color: #db7f34;
+            padding: 10px 0;
+        }
+        .nav-links {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .nav-links li {
+            margin-right: 20px;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 0;
+        }
+        .nav-links a:hover {
+            border-bottom: 2px solid white;
+        }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .button {
+            background-color: #db7f34;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #db7f34;
+        }
+        .client-info {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .client-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .client-header h2 {
+            margin: 0;
+        }
+        .client-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .detail-item {
+            margin-bottom: 15px;
+        }
+        .detail-item label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #7f8c8d;
+        }
+        .detail-item p {
+            margin: 0;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        .tab.active {
+            font-weight: bold;
+            border-bottom: 3px solid #db7f34;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .section-header h3 {
+            margin: 0;
+        }
+        .workouts-list, .assessments-list {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f4f7f6;
+            font-weight: bold;
+        }
+        .health-notes {
+            background-color: #fef9e7;
+            border-left: 4px solid #f1c40f;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .health-notes h4 {
+            margin-top: 0;
+            color: #db7f34;
+        }
+        .delete-button {
+        background-color: #e74c3c;
+    }
+    .delete-button:hover {
+        background-color: #c0392b;
+    }
+    .delete-modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.5);
+    }
+    .modal-content {
+        background-color: white;
+        margin: 10% auto;
+        padding: 20px;
+        border-radius: 8px;
+        max-width: 500px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        text-align: center;
+    }
+    .modal-title {
+        color: #e74c3c;
+        margin-top: 0;
+    }
+    .modal-message {
+        margin-bottom: 25px;
+        color: #2c3e50;
+    }
+    .modal-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+    }
+    .cancel-button {
+        background-color: #95a5a6;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .cancel-button:hover {
+        background-color: #7f8c8d;
+    }
+    .confirm-delete-button {
+        background-color: #e74c3c;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .confirm-delete-button:hover {
+        background-color: #c0392b;
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <h1>MegaPersonal</h1>
+            </div>
+            <div class="user-info">
+                <span>Bem-vindo, {{ session.get('trainer_name', 'Treinador') }}</span>
+                <a href="{{ url_for('logout') }}">Sair</a>
+            </div>
+        </div>
+    </header>
+    
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('client_list') }}">Clientes</a></li>
+            <li><a href="{{ url_for('exercises') }}">Exercícios</a></li>
+            <li><a href="{{ url_for('workout_templates') }}">Templates de Treino</a></li>
+            <li><a href="{{ url_for('attendance_list') }}">Presenças</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <div class="page-header">
+            <h1>Detalhes do Cliente</h1>
+            <a href="{{ url_for('client_list') }}" class="button">Voltar para Lista</a>
+        </div>
+        
+        <div class="client-info">
+            <div class="client-header">
+                <h2>{{ client.name }}</h2>
+                <div>
+                    <a href="{{ url_for('client_user_manage', client_id=client.id) }}" class="button secondary">Gerenciar Acesso</a>
+                    <a href="{{ url_for('client_edit', client_id=client.id) }}" class="button">Editar Cliente</a>
+                    <button onclick="showDeleteModal()" class="button delete-button">Excluir Cliente</button>
+                </div>
+            </div>
+            
+            <div class="client-details">
+                <div class="detail-item">
+                    <label>Email</label>
+                    <p>{{ client.email }}</p>
+                </div>
+                <div class="detail-item">
+                    <label>Telefone</label>
+                    <p>{{ client.phone }}</p>
+                </div>
+                <div class="detail-item">
+                    <label>Idade</label>
+                    <p>{{ client.age if client.age else 'Não informado' }}</p>
+                </div>
+                <div class="detail-item">
+                    <label>Altura</label>
+                    <p>{{ client.height|round(2) if client.height else 'Não informado' }} m</p>
+                </div>
+                <div class="detail-item">
+                    <label>Peso Atual</label>
+                    <p>{{ client.weight|round(1) if client.weight else 'Não informado' }} kg</p>
+                </div>
+                <div class="detail-item">
+                    <label>Desde</label>
+                    <p>{{ client.registration_date.strftime('%d/%m/%Y') }}</p>
+                </div>
+            </div>
+            
+            <div class="detail-item">
+                <label>Objetivo</label>
+                <p>{{ client.goal }}</p>
+            </div>
+            
+            {% if client.health_notes %}
+            <div class="health-notes">
+                <h4>Observações de Saúde</h4>
+                <p>{{ client.health_notes }}</p>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('workouts')">Treinos</div>
+            <div class="tab" onclick="switchTab('assessments')">Avaliações</div>
+            <div class="tab" onclick="switchTab('attendance')">Presença</div>
+        </div>
+        
+        <div id="workouts" class="tab-content active">
+            <div class="section-header">
+                <h3>Treinos</h3>
+                <a href="{{ url_for('workout_new', client_id=client.id) }}" class="button">Novo Treino</a>
+            </div>
+            
+            <div class="workouts-list">
+                {% if workouts %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Descrição</th>
+                            <th>Data de Criação</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for workout in workouts %}
+                        <tr>
+                            <td>{{ workout.name }}</td>
+                            <td>{{ workout.description|truncate(50) }}</td>
+                            <td>{{ workout.created_date.strftime('%d/%m/%Y') }}</td>
+                            <td>
+                                <a href="{{ url_for('workout_edit', workout_id=workout.id) }}" class="button">Editar</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>Não há treinos cadastrados para este cliente.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div id="assessments" class="tab-content">
+            <div class="section-header">
+                <h3>Avaliações Físicas</h3>
+                <div>
+                    <a href="{{ url_for('assessment_compare', client_id=client.id) }}" class="button secondary">Comparar Avaliações</a>
+                    <a href="{{ url_for('assessment_new', client_id=client.id) }}" class="button">Nova Avaliação</a>
+                </div>
+            </div>
+            
+            <div class="assessments-list">
+                {% if assessments %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Peso</th>
+                            <th>% Gordura</th>
+                            <th>Cintura</th>
+                            <th>Quadril</th>
+                            <th>Fotos</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for assessment in assessments %}
+                        <tr>
+                            <td>{{ assessment.date.strftime('%d/%m/%Y') }}</td>
+                            <td>{{ assessment.weight|round(1) }} kg</td>
+                            <td>{% if assessment.body_fat %}{{ assessment.body_fat|round(1) }}%{% else %}-{% endif %}</td>
+                            <td>{% if assessment.waist %}{{ assessment.waist|round(1) }} cm{% else %}-{% endif %}</td>
+                            <td>{% if assessment.hips %}{{ assessment.hips|round(1) }} cm{% else %}-{% endif %}</td>
+                            <td>
+                                {% if assessment.front_photo or assessment.side_photo or assessment.back_photo %}
+                                <span style="color: #2ecc71;">✓</span>
+                                {% else %}
+                                <span style="color: #e74c3c;">✗</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('assessment_view', assessment_id=assessment.id) }}" class="button">Ver</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>Não há avaliações cadastradas para este cliente.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div id="attendance" class="tab-content">
+            <div class="section-header">
+                <h3>Registro de Presença</h3>
+                <div>
+                    <a href="{{ url_for('attendance_history', client_id=client.id) }}" class="button">Ver Histórico de Presença</a>
+                    <a href="{{ url_for('attendance_list') }}" class="button secondary">Página de Presenças</a>
+                </div>
+            </div>
+            
+            <div class="assessments-list">
+                <p>Não há registros de presença para este cliente.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function switchTab(tabId) {
+            // Esconde todos os conteúdos de tab
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active de todas as tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Ativa a tab clicada
+            document.getElementById(tabId).classList.add('active');
+            
+            // Encontra o elemento tab correspondente e ativa
+            const tabs = document.querySelectorAll('.tab');
+            for(let i = 0; i < tabs.length; i++) {
+                if(tabs[i].textContent.toLowerCase().includes(tabId.toLowerCase())) {
+                    tabs[i].classList.add('active');
+                    break;
+                }
+            }
+        }
+    </script>
+    <script>
+        function showDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'block';
+        }
+        
+        function hideDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+        
+        // Fechar modal quando clicar fora dele
+        window.onclick = function(event) {
+            var modal = document.getElementById('deleteModal');
+            if (event.target == modal) {
+                hideDeleteModal();
+            }
+        }
+    </script>
+    <div id="deleteModal" class="delete-modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Excluir Cliente</h3>
+            <p class="modal-message">
+                Você tem certeza que deseja excluir <strong>{{ client.name }}</strong>?<br>
+                Esta ação não pode ser desfeita e todos os dados do cliente, incluindo treinos e avaliações, serão permanentemente excluídos.
+            </p>
+            <div class="modal-buttons">
+                <button class="cancel-button" onclick="hideDeleteModal()">Cancelar</button>
+                <form action="{{ url_for('client_delete', client_id=client.id) }}" method="POST" style="display: inline;">
+                    <button type="submit" class="confirm-delete-button">Confirmar Exclusão</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MegaPersonal - Meus Treinos</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #db7f34;
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .logo h1 {
+            margin: 0;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        .user-info a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+        }
+        .user-info a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .welcome-box {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .welcome-message h2 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .welcome-message p {
+            margin-bottom: 0;
+            color: #7f8c8d;
+        }
+        .workout-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .workout-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        .workout-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .workout-header {
+            background-color: #db7f34;
+            color: white;
+            padding: 15px;
+            position: relative;
+        }
+        .workout-header h3 {
+            margin: 0;
+        }
+        .workout-body {
+            padding: 15px;
+        }
+        .workout-description {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            max-height: 80px;
+            overflow: hidden;
+        }
+        .workout-footer {
+            border-top: 1px solid #ecf0f1;
+            padding: 15px;
+            text-align: right;
+        }
+        .button {
+            background-color: #db7f34;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #db7f34;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .empty-state h3 {
+            color: #7f8c8d;
+        }
+        .empty-state p {
+            color: #95a5a6;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <h1>MegaPersonal</h1>
+            </div>
+            <div class="user-info">
+                <span>Bem-vindo, {{ client.name }}</span>
+                <a href="{{ url_for('client_logout') }}">Sair</a>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+
+        <!-- Adicione isso logo após a abertura da div "container" -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="flash-messages" style="margin-bottom: 20px;">
+    {% for category, message in messages %}
+    <div class="flash-message {{ category }}" style="padding: 12px 15px; border-radius: 4px; margin-bottom: 10px;">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
+        <div class="welcome-box">
+            <div class="welcome-message">
+                <h2>Olá, {{ client.name.split()[0] }}!</h2>
+                <p>Confira seus treinos e acompanhe seu progresso.</p>
+            </div>
+        </div>
+        
+        {% if workouts %}
+        <div class="workout-cards">
+            {% for workout in workouts %}
+            <div class="workout-card">
+                <div class="workout-header">
+                    <h3>{{ workout.name }}</h3>
+                </div>
+                <div class="workout-body">
+                    <div class="workout-description">
+                        {% if workout.description %}
+                        {{ workout.description }}
+                        {% else %}
+                        <em>Sem descrição disponível</em>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="workout-footer">
+                    <a href="{{ url_for('client_workout_view', workout_id=workout.id) }}" class="button">Ver Treino</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h3>Você ainda não tem treinos</h3>
+            <p>Seu personal trainer adicionará treinos em breve.</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

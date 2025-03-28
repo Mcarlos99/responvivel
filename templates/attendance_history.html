@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MegaPersonal - Histórico de Presenças</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #db7f34;
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .logo h1 {
+            margin: 0;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        .user-info a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+        }
+        .user-info a:hover {
+            text-decoration: underline;
+        }
+        .navbar {
+            background-color: #db7f34;
+            padding: 10px 0;
+        }
+        .nav-links {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .nav-links li {
+            margin-right: 20px;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 0;
+        }
+        .nav-links a:hover {
+            border-bottom: 2px solid white;
+        }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .button {
+            background-color: #db7f34;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #c26f2e;
+        }
+        .button.secondary {
+            background-color: #95a5a6;
+        }
+        .button.secondary:hover {
+            background-color: #7f8c8d;
+        }
+        .client-info {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .client-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .client-header h2 {
+            margin: 0;
+            color: #2c3e50;
+        }
+        .client-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .detail-item {
+            margin-bottom: 10px;
+        }
+        .detail-item label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #7f8c8d;
+        }
+        .detail-item p {
+            margin: 0;
+        }
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 15px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #db7f34;
+            margin: 10px 0;
+        }
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        .history-list {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f4f7f6;
+            font-weight: bold;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .status-present {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-absent {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .status-justified {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <h1>MegaPersonal</h1>
+            </div>
+            <div class="user-info">
+                <span>Bem-vindo, {{ session.get('trainer_name', 'Treinador') }}</span>
+                <a href="{{ url_for('logout') }}">Sair</a>
+            </div>
+        </div>
+    </header>
+    
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('client_list') }}">Clientes</a></li>
+            <li><a href="{{ url_for('exercises') }}">Exercícios</a></li>
+            <li><a href="{{ url_for('workout_templates') }}">Templates de Treino</a></li>
+            <li><a href="{{ url_for('attendance_list') }}">Presenças</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <div class="page-header">
+            <h1>Histórico de Presenças</h1>
+            <div>
+                <a href="{{ url_for('attendance_list') }}" class="button secondary">Voltar para Presenças</a>
+                <a href="{{ url_for('client_detail', client_id=client.id) }}" class="button">Voltar para Perfil</a>
+            </div>
+        </div>
+        
+        <div class="client-info">
+            <div class="client-header">
+                <h2>{{ client.name }}</h2>
+            </div>
+            <div class="client-details">
+                <div class="detail-item">
+                    <label>Email</label>
+                    <p>{{ client.email }}</p>
+                </div>
+                <div class="detail-item">
+                    <label>Telefone</label>
+                    <p>{{ client.phone }}</p>
+                </div>
+                <div class="detail-item">
+                    <label>Objetivo</label>
+                    <p>{{ client.goal }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-label">Total de Sessões</div>
+                <div class="stat-value">{{ total }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Presenças</div>
+                <div class="stat-value">{{ present_count }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Faltas</div>
+                <div class="stat-value">{{ absent_count }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Justificadas</div>
+                <div class="stat-value">{{ justified_count }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Taxa de Presença</div>
+                <div class="stat-value">{{ attendance_rate|round|int }}%</div>
+            </div>
+        </div>
+        
+        <div class="history-list">
+            <h2>Histórico de Sessões</h2>
+            
+            {% if attendances %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Status</th>
+                        <th>Treino</th>
+                        <th>Observações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for attendance in attendances %}
+                    <tr>
+                        <td>{{ attendance.date.strftime('%d/%m/%Y') }}</td>
+                        <td>
+                            {% if attendance.status == 'presente' %}
+                                <span class="status-badge status-present">Presente</span>
+                            {% elif attendance.status == 'ausente' %}
+                                <span class="status-badge status-absent">Ausente</span>
+                            {% elif attendance.status == 'justificado' %}
+                                <span class="status-badge status-justified">Justificado</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if attendance.workout %}
+                                {{ attendance.workout.name }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if attendance.notes %}
+                                {{ attendance.notes }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>Não há registros de presença nos últimos 3 meses.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

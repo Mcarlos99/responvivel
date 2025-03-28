@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MegaPersonal - Editar Template de Treino</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #db7f34;
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .logo h1 {
+            margin: 0;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        .user-info a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+        }
+        .user-info a:hover {
+            text-decoration: underline;
+        }
+        .navbar {
+            background-color: #db7f34;
+            padding: 10px 0;
+        }
+        .nav-links {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .nav-links li {
+            margin-right: 20px;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 0;
+        }
+        .nav-links a:hover {
+            border-bottom: 2px solid white;
+        }
+        .page-header {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .form-container, .exercise-list {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="number"],
+        textarea, 
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            min-height: 100px;
+        }
+        .button-container {
+            margin-top: 20px;
+            text-align: right;
+        }
+        .button {
+            background-color: #db7f34;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .button:hover {
+            background-color: #c26f2e;
+        }
+        .button.secondary {
+            background-color: #95a5a6;
+        }
+        .button.secondary:hover {
+            background-color: #7f8c8d;
+        }
+        .workout-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .workout-info {
+            flex: 2;
+            padding-right: 20px;
+        }
+        .workout-actions {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-end;
+        }
+        .workout-actions .button {
+            margin-bottom: 10px;
+            width: 200px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f4f7f6;
+            font-weight: bold;
+        }
+        .exercise-form {
+            margin-top: 30px;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        .form-group {
+            flex: 1;
+        }
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        .flash-message {
+            padding: 12px 15px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        .flash-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .flash-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .flash-message.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .flash-message.warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        .close-flash {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .close-flash:hover {
+            color: #555;
+        }
+        .empty-message {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 50%;
+            max-width: 500px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        .modal-header h3 {
+            margin: 0;
+        }
+        .close-modal {
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #95a5a6;
+        }
+        .close-modal:hover {
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <h1>MegaPersonal</h1>
+            </div>
+            <div class="user-info">
+                <span>Bem-vindo, {{ session.get('trainer_name', 'Treinador') }}</span>
+                <a href="{{ url_for('logout') }}">Sair</a>
+            </div>
+        </div>
+    </header>
+    
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('client_list') }}">Clientes</a></li>
+            <li><a href="{{ url_for('exercises') }}">Exercícios</a></li>
+            <li><a href="{{ url_for('workout_templates') }}">Templates de Treino</a></li>
+            <li><a href="{{ url_for('attendance_list') }}">Presenças</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="flash-message {{ category }}">
+                {{ message }}
+                <span class="close-flash" onclick="this.parentElement.style.display='none';">&times;</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        
+        <div class="page-header">
+            <h1>Editar Template de Treino</h1>
+            <a href="{{ url_for('workout_templates') }}" class="button secondary">Voltar para Templates</a>
+        </div>
+        
+        <div class="form-container">
+            <div class="workout-details">
+                <div class="workout-info">
+                    <h2>{{ template.name }}</h2>
+                    <p>{{ template.description }}</p>
+                    <p><small>Criado em: {{ template.created_date.strftime('%d/%m/%Y') }}</small></p>
+                </div>
+                <div class="workout-actions">
+                    <a href="#" class="button" onclick="showEditInfoModal()">Editar Informações</a>
+                    <a href="#" class="button secondary" onclick="showDuplicateModal()">Duplicar Template</a>
+                </div>
+            </div>
+            
+            <h3>Exercícios do Template</h3>
+            
+            {% if template_exercises %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ordem</th>
+                        <th>Exercício</th>
+                        <th>Séries</th>
+                        <th>Repetições</th>
+                        <th>Descanso</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for we in template_exercises %}
+                    <tr>
+                        <td>{{ we.order }}</td>
+                        <td>{{ we.exercise.name }}</td>
+                        <td>{{ we.sets }}</td>
+                        <td>{{ we.reps }}</td>
+                        <td>{{ we.rest_time }}s</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('workout_template_edit', template_id=template.id) }}" style="display: inline;">
+                                <input type="hidden" name="remove_exercise_id" value="{{ we.id }}">
+                                <button type="submit" class="button secondary">Remover</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-message">
+                <p>Nenhum exercício adicionado ainda. Use o formulário abaixo para adicionar exercícios ao template.</p>
+            </div>
+            {% endif %}
+            
+            <div class="exercise-form">
+                <h3>Adicionar Exercício</h3>
+                <form method="POST" action="{{ url_for('workout_template_edit', template_id=template.id) }}">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="exercise">Exercício*</label>
+                            <select id="exercise" name="exercise_id" required>
+                                <option value="">Selecione um exercício</option>
+                                {% for exercise in exercises %}
+                                <option value="{{ exercise.id }}">{{ exercise.name }} ({{ exercise.muscle_group }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="order">Ordem</label>
+                            <input type="number" id="order" name="order" min="1" value="{{ template_exercises|length + 1 }}">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="sets">Séries*</label>
+                            <input type="number" id="sets" name="sets" min="1" max="20" value="3" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reps">Repetições*</label>
+                            <input type="text" id="reps" name="reps" placeholder="Ex: 12, 10-12, ou 12,10,8" value="12" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="rest_time">Descanso (segundos)*</label>
+                            <input type="number" id="rest_time" name="rest_time" min="0" max="300" value="60" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="notes">Observações</label>
+                        <textarea id="notes" name="notes" placeholder="Técnica, variações, progressão de carga..."></textarea>
+                    </div>
+                    
+                    <div class="button-container">
+                        <button type="submit" class="button">Adicionar Exercício</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para editar informações do template -->
+    <div id="editInfoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Editar Informações do Template</h3>
+                <span class="close-modal" onclick="hideEditInfoModal()">&times;</span>
+            </div>
+            <form method="POST" action="{{ url_for('workout_template_update', template_id=template.id) }}">
+                <div class="form-group">
+                    <label for="edit_name">Nome do Template*</label>
+                    <input type="text" id="edit_name" name="name" value="{{ template.name }}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_description">Descrição/Observações</label>
+                    <textarea id="edit_description" name="description">{{ template.description }}</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_category">Categoria</label>
+                    <select id="edit_category" name="category">
+                        <option value="">Selecione uma categoria (opcional)</option>
+                        <option value="iniciante" {% if template.category == 'iniciante' %}selected{% endif %}>Iniciante</option>
+                        <option value="intermediario" {% if template.category == 'intermediario' %}selected{% endif %}>Intermediário</option>
+                        <option value="avancado" {% if template.category == 'avancado' %}selected{% endif %}>Avançado</option>
+                        <option value="hipertrofia" {% if template.category == 'hipertrofia' %}selected{% endif %}>Hipertrofia</option>
+                        <option value="emagrecimento" {% if template.category == 'emagrecimento' %}selected{% endif %}>Emagrecimento</option>
+                        <option value="resistencia" {% if template.category == 'resistencia' %}selected{% endif %}>Resistência</option>
+                        <option value="funcional" {% if template.category == 'funcional' %}selected{% endif %}>Funcional</option>
+                        <option value="outro" {% if template.category == 'outro' %}selected{% endif %}>Outro</option>
+                    </select>
+                </div>
+                
+                <div class="button-container">
+                    <button type="button" class="button secondary" onclick="hideEditInfoModal()">Cancelar</button>
+                    <button type="submit" class="button">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal para duplicar template -->
+    <div id="duplicateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Duplicar Template</h3>
+                <span class="close-modal" onclick="hideDuplicateModal()">&times;</span>
+            </div>
+            <form method="POST" action="{{ url_for('workout_template_duplicate', template_id=template.id) }}">
+                <div class="form-group">
+                    <label for="duplicate_name">Nome do Novo Template*</label>
+                    <input type="text" id="duplicate_name" name="name" value="{{ template.name }} (Cópia)" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="duplicate_description">Descrição/Observações</label>
+                    <textarea id="duplicate_description" name="description">{{ template.description }}</textarea>
+                </div>
+                
+                <div class="button-container">
+                    <button type="button" class="button secondary" onclick="hideDuplicateModal()">Cancelar</button>
+                    <button type="submit" class="button">Duplicar Template</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // Funções para controlar os modais
+        function showEditInfoModal() {
+            document.getElementById('editInfoModal').style.display = 'block';
+        }
+        
+        function hideEditInfoModal() {
+            document.getElementById('editInfoModal').style.display = 'none';
+        }
+        
+        function showDuplicateModal() {
+            document.getElementById('duplicateModal').style.display = 'block';
+        }
+        
+        function hideDuplicateModal() {
+            document.getElementById('duplicateModal').style.display = 'none';
+        }
+        
+        // Fechar modal quando clicar fora
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('editInfoModal')) {
+                hideEditInfoModal();
+            }
+            if (event.target == document.getElementById('duplicateModal')) {
+                hideDuplicateModal();
+            }
+        }
+    </script>
+</body>
+</html>

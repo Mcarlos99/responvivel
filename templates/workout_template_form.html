@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MegaPersonal - Novo Template de Treino</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #db7f34;
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .logo h1 {
+            margin: 0;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        .user-info a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+        }
+        .user-info a:hover {
+            text-decoration: underline;
+        }
+        .navbar {
+            background-color: #db7f34;
+            padding: 10px 0;
+        }
+        .nav-links {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .nav-links li {
+            margin-right: 20px;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 0;
+        }
+        .nav-links a:hover {
+            border-bottom: 2px solid white;
+        }
+        .page-header {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .form-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            min-height: 120px;
+        }
+        .button-container {
+            margin-top: 20px;
+            text-align: right;
+        }
+        .button {
+            background-color: #db7f34;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .button:hover {
+            background-color: #c26f2e;
+        }
+        .button.secondary {
+            background-color: #95a5a6;
+        }
+        .button.secondary:hover {
+            background-color: #7f8c8d;
+        }
+        .help-text {
+            font-size: 13px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        .template-info {
+            background-color: #f4f7f6;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .template-info p {
+            margin: 0 0 10px 0;
+        }
+        .template-info .title {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <h1>MegaPersonal</h1>
+            </div>
+            <div class="user-info">
+                <span>Bem-vindo, {{ session.get('trainer_name', 'Treinador') }}</span>
+                <a href="{{ url_for('logout') }}">Sair</a>
+            </div>
+        </div>
+    </header>
+    
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('client_list') }}">Clientes</a></li>
+            <li><a href="{{ url_for('exercises') }}">Exercícios</a></li>
+            <li><a href="{{ url_for('workout_templates') }}">Templates de Treino</a></li>
+            <li><a href="{{ url_for('attendance_list') }}">Presenças</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <div class="page-header">
+            <h1>Criar Novo Template de Treino</h1>
+            <a href="{{ url_for('workout_templates') }}" class="button secondary">Voltar para Templates</a>
+        </div>
+        
+        <div class="template-info">
+            <p class="title">O que são Templates de Treino?</p>
+            <p>Os templates de treino permitem que você crie modelos de treinos padronizados que podem ser aplicados a múltiplos alunos de forma rápida.</p>
+            <p>Após criar o template, você poderá adicionar exercícios e depois aplicá-lo a qualquer aluno, economizando tempo ao não precisar criar treinos semelhantes do zero.</p>
+        </div>
+        
+        <div class="form-container">
+            <form method="POST" action="{{ url_for('workout_template_new') }}">
+                <div class="form-group">
+                    <label for="name">Nome do Template*</label>
+                    <input type="text" id="name" name="name" required placeholder="Ex: Treino A - Iniciante, Hipertrofia Intermediário, etc.">
+                    <div class="help-text">Escolha um nome descritivo que identifique o propósito do template.</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Descrição/Observações</label>
+                    <textarea id="description" name="description" placeholder="Descreva o objetivo deste template, para qual público-alvo ele foi criado, instruções gerais, etc."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="category">Categoria</label>
+                    <select id="category" name="category">
+                        <option value="">Selecione uma categoria (opcional)</option>
+                        <option value="iniciante">Iniciante</option>
+                        <option value="intermediario">Intermediário</option>
+                        <option value="avancado">Avançado</option>
+                        <option value="hipertrofia">Hipertrofia</option>
+                        <option value="emagrecimento">Emagrecimento</option>
+                        <option value="resistencia">Resistência</option>
+                        <option value="funcional">Funcional</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+                
+                <div class="button-container">
+                    <a href="{{ url_for('workout_templates') }}" class="button secondary">Cancelar</a>
+                    <button type="submit" class="button">Continuar para Adicionar Exercícios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MegaPersonal{% endblock %}</title>
+    
+    <!-- Fonte Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Estilos CSS responsivos -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    
+    {% block additional_styles %}{% endblock %}
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-container">
+                    <img src="{{ url_for('static', filename='logo.png') }}" alt="MegaPersonal Logo">
+                    <h1>MegaPersonal</h1>
+                </div>
+                
+                {% if session.get('trainer_id') or session.get('client_id') %}
+                <div class="user-info">
+                    <div class="user-avatar">
+                        {% set user_name = session.get('trainer_name', 'User') %}
+                        {{ user_name[0].upper() }}
+                    </div>
+                    <span class="user-name">{{ session.get('trainer_name', 'Usuário') }}</span>
+                    <a href="{{ url_for('logout') }}" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Sair
+                    </a>
+                </div>
+                {% endif %}
+                
+                <button class="menu-toggle" aria-label="Menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Navbar -->
+    {% if session.get('trainer_id') %}
+    <nav class="navbar">
+        <div class="container">
+            <ul class="nav-links">
+                <li><a href="{{ url_for('dashboard') }}"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+                <li><a href="{{ url_for('client_list') }}"><i class="fas fa-users"></i> Clientes</a></li>
+                <li><a href="{{ url_for('exercises') }}"><i class="fas fa-dumbbell"></i> Exercícios</a></li>
+                <li><a href="{{ url_for('workout_templates') }}"><i class="fas fa-clipboard-list"></i> Templates</a></li>
+                <li><a href="{{ url_for('attendance_list') }}"><i class="fas fa-calendar-check"></i> Presenças</a></li>
+            </ul>
+        </div>
+    </nav>
+    {% elif session.get('client_id') %}
+    <nav class="navbar">
+        <div class="container">
+            <ul class="nav-links">
+                <li><a href="{{ url_for('client_dashboard') }}"><i class="fas fa-home"></i> Início</a></li>
+                <li><a href="#"><i class="fas fa-dumbbell"></i> Meus Treinos</a></li>
+                <li><a href="#"><i class="fas fa-chart-line"></i> Progresso</a></li>
+            </ul>
+        </div>
+    </nav>
+    {% endif %}
+    
+    <!-- Conteúdo Principal -->
+    <main class="container">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-container">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                            <button type="button" class="close-alert">&times;</button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        <!-- Título da Página -->
+        <div class="page-header">
+            <h1>{% block page_title %}{% endblock %}</h1>
+            {% block page_actions %}{% endblock %}
+        </div>
+        
+        <!-- Conteúdo -->
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 MegaPersonal. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+    
+    <!-- Scripts JS -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% block additional_scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MegaPersonal - Login</title>
+    
+    <!-- Fonte Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Estilos CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    
+    <style>
+        body {
+            background-color: #f9fafb;
+            background-image: linear-gradient(135deg, #f9fafb 0%, #e6ecf0 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 25px;
+            margin: 15px;
+        }
+        
+        .login-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .login-header {
+            text-align: center;
+            padding: 30px 20px;
+            background-color: #fdf6f0;
+        }
+        
+        .login-logo {
+            margin-bottom: 15px;
+        }
+        
+        .login-logo img {
+            max-height: 80px;
+            max-width: 100%;
+        }
+        
+        .login-title {
+            color: var(--primary);
+            font-weight: 600;
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        
+        .login-subtitle {
+            color: var(--gray);
+            margin-top: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .login-body {
+            padding: 30px;
+        }
+        
+        .tab-container {
+            display: flex;
+            margin-bottom: 25px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            border: 1px solid var(--gray-lighter);
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background-color: #f8f9fa;
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .tab:hover:not(.active) {
+            background-color: #eef1f5;
+        }
+        
+        .tab.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--gray-dark);
+        }
+        
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 1rem;
+            color: var(--gray-dark);
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid #dce1e4;
+            border-radius: 5px;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: 0;
+            box-shadow: 0 0 0 3px rgba(219, 127, 52, 0.15);
+        }
+        
+        .form-text {
+            margin-top: 5px;
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        .input-group .form-control {
+            padding-right: 40px;
+        }
+        
+        .input-group-append {
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+        }
+        
+        .password-toggle {
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .password-toggle:hover {
+            color: var(--primary);
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            text-align: center;
+            font-weight: 500;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .login-footer {
+            text-align: center;
+            padding: 15px 30px 30px;
+        }
+        
+        .login-footer p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .login-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .login-header {
+                padding: 20px;
+            }
+            
+            .login-body {
+                padding: 20px;
+            }
+            
+            .login-logo img {
+                max-height: 60px;
+            }
+            
+            .login-title {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="MegaPersonal Logo">
+                </div>
+                <h1 class="login-title">MegaPersonal</h1>
+                <p class="login-subtitle">Sistema de Gerenciamento para Personal Trainers</p>
+            </div>
+            
+            <div class="login-body">
+                <div class="tab-container">
+                    <div class="tab active" id="trainerTab" onclick="switchTab('trainer')">
+                        <i class="fas fa-user-tie"></i> Personal Trainer
+                    </div>
+                    <div class="tab" id="studentTab" onclick="switchTab('student')">
+                        <i class="fas fa-user"></i> Aluno
+                    </div>
+                </div>
+                
+                <!-- Formulário de login do Personal Trainer -->
+                <div id="trainerContent" class="tab-content active">
+                    {% if error and user_type == 'trainer' %}
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-circle"></i> {{ error }}
+                    </div>
+                    {% endif %}
+                    
+                    <form method="POST" action="{{ url_for('login') }}">
+                        <div class="form-group">
+                            <label for="trainer_email" class="form-label">Email</label>
+                            <input type="email" id="trainer_email" name="email" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="trainer_password" class="form-label">Senha</label>
+                            <div class="input-group">
+                                <input type="password" id="trainer_password" name="password" class="form-control" required>
+                                <div class="input-group-append">
+                                    <button type="button" class="password-toggle" data-target="trainer_password">
+                                        <i class="far fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <input type="hidden" name="user_type" value="trainer">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt"></i> Entrar como Personal
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Formulário de login do Aluno -->
+                <div id="studentContent" class="tab-content">
+                    {% if error and user_type == 'student' %}
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-circle"></i> {{ error }}
+                    </div>
+                    {% endif %}
+                    
+                    <form method="POST" action="{{ url_for('login') }}">
+                        <div class="form-group">
+                            <label for="student_username" class="form-label">Nome de Usuário</label>
+                            <input type="text" id="student_username" name="username" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="student_password" class="form-label">Senha</label>
+                            <div class="input-group">
+                                <input type="password" id="student_password" name="password" class="form-control" required>
+                                <div class="input-group-append">
+                                    <button type="button" class="password-toggle" data-target="student_password">
+                                        <i class="far fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <input type="hidden" name="user_type" value="student">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt"></i> Entrar como Aluno
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="login-footer">
+                <p id="trainerFooter">Não tem uma conta? <a href="{{ url_for('register') }}">Cadastre-se como Personal Trainer</a></p>
+                <p id="studentFooter" style="display: none;">Entre em contato com seu personal trainer para obter acesso.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Função para alternar entre as abas de login
+        function switchTab(type) {
+            // Atualiza as abas
+            document.getElementById('trainerTab').classList.remove('active');
+            document.getElementById('studentTab').classList.remove('active');
+            document.getElementById(type + 'Tab').classList.add('active');
+            
+            // Atualiza os formulários
+            document.getElementById('trainerContent').classList.remove('active');
+            document.getElementById('studentContent').classList.remove('active');
+            document.getElementById(type + 'Content').classList.add('active');
+            
+            // Atualiza o footer
+            document.getElementById('trainerFooter').style.display = type === 'trainer' ? 'block' : 'none';
+            document.getElementById('studentFooter').style.display = type === 'student' ? 'block' : 'none';
+        }
+        
+        // Função para mostrar/ocultar senha
+        document.querySelectorAll('.password-toggle').forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const input = document.getElementById(targetId);
+                
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    this.innerHTML = '<i class="far fa-eye-slash"></i>';
+                } else {
+                    input.type = 'password';
+                    this.innerHTML = '<i class="far fa-eye"></i>';
+                }
+            });
+        });
+        
+        // Se houver um erro específico para um tipo de usuário, mostra o formulário correspondente
+        {% if user_type == 'student' %}
+            switchTab('student');
+        {% endif %}
+    </script>
+</body>
+</html>

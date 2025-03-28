@@ -1,0 +1,316 @@
+<!-- Salve como admin_dashboard.html na pasta templates -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MegaPersonal - Dashboard Administrativo</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #db7f34;
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .logo h1 {
+            margin: 0;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        .user-info a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+        }
+        .user-info a:hover {
+            text-decoration: underline;
+        }
+        .page-header {
+            margin-bottom: 20px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #db7f34;
+            margin: 10px 0;
+        }
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+        .data-section {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        .section-header h2 {
+            margin: 0;
+            color: #2c3e50;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f4f7f6;
+            font-weight: bold;
+        }
+        .button {
+            background-color: #db7f34;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #db7f34;
+        }
+        .button.secondary {
+            background-color: #95a5a6;
+        }
+        .button.secondary:hover {
+            background-color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <h1>MegaPersonal</h1>
+            </div>
+            <div class="user-info">
+                <span>Bem-vindo, Administrador</span>
+                <a href="{{ url_for('logout') }}">Sair</a>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="page-header">
+            <h1>Dashboard Administrativo</h1>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">{{ trainer_count }}</div>
+                <div class="stat-label">Personal Trainers</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-value">{{ client_count }}</div>
+                <div class="stat-label">Alunos</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-value">{{ workout_count }}</div>
+                <div class="stat-label">Treinos</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-value">{{ assessment_count }}</div>
+                <div class="stat-label">Avaliações</div>
+            </div>
+        </div>
+        
+        <div class="data-section">
+            <div class="section-header">
+                <h2>Personal Trainers</h2>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Telefone</th>
+                        <th>Data de Registro</th>
+                        <th>Qtd. Alunos</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trainer in trainers %}
+                    <tr>
+                        <td>{{ trainer.name }}</td>
+                        <td>{{ trainer.email }}</td>
+                        <td>{{ trainer.phone }}</td>
+                        <td>{{ trainer.registration_date.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ trainer.clients|length }}</td>
+                        <td>
+                            {% if trainer.is_active %}
+                            <span style="color: #2ecc71; font-weight: bold;">Ativo</span>
+                            {% else %}
+                            <span style="color: #e74c3c; font-weight: bold;">Inativo</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if trainer.is_active %}
+                            <form method="POST" action="{{ url_for('toggle_trainer_status', trainer_id=trainer.id) }}" style="display: inline;">
+                                <input type="hidden" name="action" value="deactivate">
+                                <button type="submit" class="button secondary" onclick="return confirm('Tem certeza que deseja desativar este personal trainer?')">Desativar</button>
+                            </form>
+                            {% else %}
+                            <form method="POST" action="{{ url_for('toggle_trainer_status', trainer_id=trainer.id) }}" style="display: inline;">
+                                <input type="hidden" name="action" value="activate">
+                                <button type="submit" class="button" onclick="return confirm('Tem certeza que deseja reativar este personal trainer?')">Reativar</button>
+                            </form>
+                            {% endif %}
+                            
+                            <!-- Botão para resetar senha -->
+                            <a href="{{ url_for('admin_reset_password_form', trainer_id=trainer.id) }}" class="button">Resetar Senha</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="data-section">
+            <div class="section-header">
+                <h2>Alunos</h2>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Personal</th>
+                        <th>Data de Registro</th>
+                        <th>Qtd. Treinos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for client in clients %}
+                    <tr>
+                        <td>{{ client.name }}</td>
+                        <td>{{ client.email }}</td>
+                        <td>{{ client.trainer.name }}</td>
+                        <td>{{ client.registration_date.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ client.workouts|length }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+<!-- Modal para resetar senha -->
+<div id="resetPasswordModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+    <div style="background-color: white; margin: 15% auto; padding: 20px; border-radius: 8px; width: 400px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+        <span onclick="hideResetPassword()" style="float: right; font-size: 24px; font-weight: bold; cursor: pointer;">&times;</span>
+        <h2 style="margin-top: 0;">Resetar Senha</h2>
+        <p id="resetPasswordText">Digite a nova senha para <strong id="trainerName"></strong>:</p>
+        
+        <form method="POST" action="{{ url_for('reset_trainer_password') }}" id="resetPasswordForm">
+            <input type="hidden" id="trainerId" name="trainer_id">
+            
+            <div style="margin-bottom: 15px;">
+                <label for="new_password" style="display: block; margin-bottom: 5px; font-weight: bold;">Nova Senha*</label>
+                <input type="password" id="new_password" name="new_password" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label for="confirm_password" style="display: block; margin-bottom: 5px; font-weight: bold;">Confirmar Senha*</label>
+                <input type="password" id="confirm_password" name="confirm_password" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+            </div>
+            
+            <div style="text-align: right;">
+                <button type="button" onclick="hideResetPassword()" class="button secondary">Cancelar</button>
+                <button type="submit" class="button">Salvar Nova Senha</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Script para controlar o modal -->
+<script>
+    function showResetPassword(trainerId, trainerName) {
+        document.getElementById('resetPasswordModal').style.display = 'block';
+        document.getElementById('trainerId').value = trainerId;
+        document.getElementById('trainerName').textContent = trainerName;
+        document.getElementById('new_password').value = '';
+        document.getElementById('confirm_password').value = '';
+    }
+    
+    function hideResetPassword() {
+        document.getElementById('resetPasswordModal').style.display = 'none';
+    }
+    
+    // Verificar se as senhas coincidem antes de enviar
+    document.getElementById('resetPasswordForm').addEventListener('submit', function(event) {
+        const newPassword = document.getElementById('new_password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
+        
+        if (newPassword !== confirmPassword) {
+            alert('As senhas não coincidem!');
+            event.preventDefault();
+        }
+    });
+    
+    // Fechar o modal se clicar fora dele
+    window.onclick = function(event) {
+        const modal = document.getElementById('resetPasswordModal');
+        if (event.target == modal) {
+            hideResetPassword();
+        }
+    }
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,427 @@
+{% extends "base.html" %}
+
+{% block title %}MegaPersonal - Dashboard{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Estatísticas em Cards -->
+    <div class="stats-grid">
+        <div class="card stats-card">
+            <div class="stats-icon">
+                <i class="fas fa-users fa-2x"></i>
+            </div>
+            <div class="stats-number">{{ client_count }}</div>
+            <div class="stats-label">Total de Clientes</div>
+        </div>
+        
+        <div class="card stats-card">
+            <div class="stats-icon">
+                <i class="fas fa-calendar-check fa-2x"></i>
+            </div>
+            <div class="stats-number">{{ attendances_today|length }}</div>
+            <div class="stats-label">Sessões Hoje</div>
+        </div>
+        
+        <div class="card stats-card">
+            <div class="stats-icon">
+                <i class="fas fa-clipboard-list fa-2x"></i>
+            </div>
+            <div class="stats-number">0</div>
+            <div class="stats-label">Avaliações este Mês</div>
+        </div>
+        
+        <div class="card stats-card">
+            <div class="stats-icon">
+                <i class="fas fa-chart-line fa-2x"></i>
+            </div>
+            <div class="stats-number">{{ attendance_rate|round|int }}%</div>
+            <div class="stats-label">Taxa de Presença</div>
+        </div>
+    </div>
+    
+    <!-- Sessões de Hoje -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">
+                <i class="fas fa-calendar-day"></i> Sessões de Hoje
+            </h2>
+            <div class="card-actions">
+                <a href="{{ url_for('attendance_list') }}" class="btn btn-sm btn-primary">
+                    <i class="fas fa-calendar"></i> Ver Todas
+                </a>
+            </div>
+        </div>
+        
+        <div class="card-body">
+            {% if attendances_today %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Horário</th>
+                            <th>Cliente</th>
+                            <th>Treino</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for attendance in attendances_today %}
+                        <tr>
+                            <td data-label="Horário">{{ attendance.date.strftime('%H:%M') }}</td>
+                            <td data-label="Cliente">{{ attendance.client.name }}</td>
+                            <td data-label="Treino">
+                                {% if attendance.workout %}
+                                {{ attendance.workout.name }}
+                                {% else %}
+                                <span class="text-muted">Não definido</span>
+                                {% endif %}
+                            </td>
+                            <td data-label="Status">
+                                {% if attendance.status == 'presente' %}
+                                <span class="badge badge-success">Presente</span>
+                                {% elif attendance.status == 'ausente' %}
+                                <span class="badge badge-danger">Ausente</span>
+                                {% elif attendance.status == 'justificado' %}
+                                <span class="badge badge-warning">Justificado</span>
+                                {% else %}
+                                <span class="badge badge-info">Pendente</span>
+                                {% endif %}
+                            </td>
+                            <td data-label="Ações">
+                                <a href="#" class="btn btn-sm btn-primary">Registrar</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-calendar-xmark"></i>
+                </div>
+                <h3>Nenhuma sessão agendada para hoje</h3>
+                <p>Você não tem sessões programadas para hoje. Use o gerenciador de presenças para agendar novas sessões.</p>
+                <a href="{{ url_for('attendance_list') }}" class="btn btn-primary">Gerenciar Presenças</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Clientes Recentes -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">
+                <i class="fas fa-user-plus"></i> Clientes Recentes
+            </h2>
+            <div class="card-actions">
+                <a href="{{ url_for('client_list') }}" class="btn btn-sm btn-primary">
+                    <i class="fas fa-users"></i> Ver Todos
+                </a>
+                <a href="{{ url_for('client_new') }}" class="btn btn-sm btn-success">
+                    <i class="fas fa-plus"></i> Adicionar
+                </a>
+            </div>
+        </div>
+        
+        <div class="card-body">
+            {% if clients %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>Telefone</th>
+                            <th>Objetivo</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for client in clients[:5] %}
+                        <tr>
+                            <td data-label="Nome">{{ client.name }}</td>
+                            <td data-label="Email">{{ client.email }}</td>
+                            <td data-label="Telefone">{{ client.phone }}</td>
+                            <td data-label="Objetivo">{{ client.goal }}</td>
+                            <td data-label="Ações">
+                                <a href="{{ url_for('client_detail', client_id=client.id) }}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-users-slash"></i>
+                </div>
+                <h3>Nenhum cliente cadastrado</h3>
+                <p>Você ainda não tem clientes cadastrados. Adicione seu primeiro cliente para começar.</p>
+                <a href="{{ url_for('client_new') }}" class="btn btn-primary">Adicionar Cliente</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Atividades Recentes ou Dicas -->
+    <div class="card dashboard-tips">
+        <div class="card-header">
+            <h2 class="card-title">
+                <i class="fas fa-lightbulb"></i> Dicas Rápidas
+            </h2>
+        </div>
+        
+        <div class="card-body">
+            <div class="tip-list">
+                <div class="tip-item">
+                    <div class="tip-icon">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <div class="tip-content">
+                        <h4>Templates de Treino</h4>
+                        <p>Crie templates para aplicar treinos padronizados a múltiplos alunos de forma rápida.</p>
+                        <a href="{{ url_for('workout_templates') }}" class="tip-link">Gerenciar Templates</a>
+                    </div>
+                </div>
+                
+                <div class="tip-item">
+                    <div class="tip-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="tip-content">
+                        <h4>Presenças e Faltas</h4>
+                        <p>Registre presenças dos seus alunos para monitorar a frequência e engajamento.</p>
+                        <a href="{{ url_for('attendance_list') }}" class="tip-link">Registrar Presenças</a>
+                    </div>
+                </div>
+                
+                <div class="tip-item">
+                    <div class="tip-icon">
+                        <i class="fas fa-weight"></i>
+                    </div>
+                    <div class="tip-content">
+                        <h4>Avaliações Físicas</h4>
+                        <p>Faça avaliações físicas periódicas para acompanhar a evolução dos seus alunos.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dashboard-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+        margin-bottom: 10px;
+    }
+    
+    .stats-card {
+        text-align: center;
+        padding: 25px 15px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stats-icon {
+        margin-bottom: 15px;
+        color: var(--primary);
+    }
+    
+    .stats-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 5px;
+        line-height: 1;
+    }
+    
+    .stats-label {
+        color: var(--gray);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        background-color: #fff;
+        border-bottom: 1px solid var(--gray-lighter);
+    }
+    
+    .card-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+    }
+    
+    .empty-icon {
+        font-size: 3rem;
+        color: var(--gray-light);
+        margin-bottom: 15px;
+    }
+    
+    .empty-state h3 {
+        color: var(--gray-dark);
+        margin-bottom: 10px;
+    }
+    
+    .empty-state p {
+        color: var(--gray);
+        margin-bottom: 20px;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .tip-list {
+        display: grid;
+        gap: 20px;
+    }
+    
+    .tip-item {
+        display: flex;
+        gap: 15px;
+        padding: 15px;
+        background-color: #f9fafb;
+        border-radius: 8px;
+        transition: transform 0.2s ease;
+    }
+    
+    .tip-item:hover {
+        transform: translateX(5px);
+    }
+    
+    .tip-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        flex-shrink: 0;
+        background-color: var(--primary-bg);
+        color: var(--primary);
+        border-radius: 50%;
+        font-size: 1.2rem;
+    }
+    
+    .tip-content h4 {
+        margin: 0 0 5px 0;
+        color: var(--gray-dark);
+    }
+    
+    .tip-content p {
+        margin: 0 0 10px 0;
+        color: var(--gray);
+        font-size: 0.9rem;
+    }
+    
+    .tip-link {
+        display: inline-block;
+        color: var(--primary);
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-decoration: none;
+    }
+    
+    .tip-link:hover {
+        text-decoration: underline;
+    }
+    
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        border-radius: 0.25rem;
+    }
+    
+    .badge-success {
+        background-color: #d1e7dd;
+        color: #0f5132;
+    }
+    
+    .badge-danger {
+        background-color: #f8d7da;
+        color: #842029;
+    }
+    
+    .badge-warning {
+        background-color: #fff3cd;
+        color: #664d03;
+    }
+    
+    .badge-info {
+        background-color: #cff4fc;
+        color: #055160;
+    }
+    
+    /* Responsividade */
+    @media (max-width: 992px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .card-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .card-actions {
+            align-self: flex-end;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .stats-card {
+            padding: 15px;
+        }
+        
+        .stats-number {
+            font-size: 2rem;
+        }
+        
+        .tip-item {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .tip-icon {
+            margin-bottom: 10px;
+        }
+    }
+</style>
+{% endblock %}

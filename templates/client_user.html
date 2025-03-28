@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MegaPersonal - Gerenciar Acesso do Cliente</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #db7f34;
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .logo h1 {
+            margin: 0;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        .user-info a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+        }
+        .user-info a:hover {
+            text-decoration: underline;
+        }
+        .navbar {
+            background-color: #db7f34;
+            padding: 10px 0;
+        }
+        .nav-links {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .nav-links li {
+            margin-right: 20px;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 0;
+        }
+        .nav-links a:hover {
+            border-bottom: 2px solid white;
+        }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .button {
+            background-color: #db7f34;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #db7f34;
+        }
+        .button.secondary {
+            background-color: #95a5a6;
+        }
+        .button.secondary:hover {
+            background-color: #7f8c8d;
+        }
+        .form-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], 
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .button-container {
+            margin-top: 20px;
+            text-align: right;
+        }
+        .client-info {
+            background-color: #f4f7f6;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .client-info p {
+            margin: 0;
+        }
+        .client-info strong {
+            color: #db7f34;
+        }
+        .error-message {
+            color: #e74c3c;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .info-box {
+            background-color: #d6eaf8;
+            border-left: 4px solid #db7f34;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .info-box h3 {
+            margin-top: 0;
+            color: #db7f34;
+        }
+        .info-box p {
+            margin-bottom: 0;
+        }
+        .qr-code {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .qr-code img {
+            max-width: 200px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <h1>MegaPersonal</h1>
+            </div>
+            <div class="user-info">
+                <span>Bem-vindo, {{ session.get('trainer_name', 'Treinador') }}</span>
+                <a href="{{ url_for('logout') }}">Sair</a>
+            </div>
+        </div>
+    </header>
+    
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('client_list') }}">Clientes</a></li>
+            <li><a href="{{ url_for('exercises') }}">Exercícios</a></li>
+            <li><a href="{{ url_for('workout_templates') }}">Templates de Treino</a></li>
+            <li><a href="{{ url_for('attendance_list') }}">Presenças</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <div class="page-header">
+            <h1>Gerenciar Acesso do Cliente</h1>
+            <a href="{{ url_for('client_detail', client_id=client.id) }}" class="button secondary">Voltar para Cliente</a>
+        </div>
+        
+        <div class="client-info">
+            <p>Cliente: <strong>{{ client.name }}</strong></p>
+            <p>Email: <strong>{{ client.email }}</strong></p>
+        </div>
+        
+        <div class="info-box">
+            <h3>Informações de Acesso</h3>
+            {% if client_user %}
+            <p>O cliente já possui um acesso configurado. Você pode alterar os dados abaixo se necessário.</p>
+            <p>Último acesso: {% if client_user.last_login %}{{ client_user.last_login.strftime('%d/%m/%Y %H:%M') }}{% else %}Nunca acessou{% endif %}</p>
+            {% else %}
+            <p>Este cliente ainda não possui acesso ao sistema. Configure um nome de usuário e senha abaixo.</p>
+            {% endif %}
+        </div>
+        
+        <div class="form-container">
+            {% if error %}
+            <div class="error-message">{{ error }}</div>
+            {% endif %}
+            
+            <form method="POST" action="{{ url_for('client_user_manage', client_id=client.id) }}">
+                <div class="form-group">
+                    <label for="username">Nome de Usuário*</label>
+                    <input type="text" id="username" name="username" value="{{ client_user.username if client_user else '' }}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Senha{% if client_user %} (Deixe em branco para manter a atual){% else %}*{% endif %}</label>
+                    <input type="password" id="password" name="password" {% if not client_user %}required{% endif %}>
+                </div>
+                
+                <div class="button-container">
+                    <a href="{{ url_for('client_detail', client_id=client.id) }}" class="button secondary">Cancelar</a>
+                    <button type="submit" class="button">{% if client_user %}Atualizar{% else %}Criar{% endif %} Acesso</button>
+                </div>
+            </form>
+        </div>
+        
+        {% if client_user %}
+        <div class="info-box">
+            <h3>Link de Acesso para o Cliente</h3>
+            <p>Compartilhe este link com seu cliente para que ele possa acessar seus treinos:</p>
+            <p><strong>{{ request.url_root }}aluno/login</strong></p>
+            
+            <div class="qr-code">
+                <p>Ou escaneie o QR Code:</p>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ request.url_root }}aluno/login" alt="QR Code de acesso">
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

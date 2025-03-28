@@ -1,0 +1,785 @@
+{% extends "base.html" %}
+
+{% block title %}MegaPersonal - Banco de Exercícios{% endblock %}
+
+{% block page_title %}Banco de Exercícios{% endblock %}
+
+{% block additional_styles %}
+<style>
+    .exercises-container {
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        gap: 20px;
+    }
+    
+    .sidebar {
+        position: sticky;
+        top: 85px;
+        height: fit-content;
+    }
+    
+    .exercise-content {
+        min-width: 0;
+    }
+    
+    .filter-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 20px;
+        background-color: #f9fafb;
+        padding: 15px;
+        border-radius: 8px;
+    }
+    
+    .filter-group {
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    .filter-label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: var(--gray-dark);
+    }
+    
+    .exercise-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+    }
+    
+    .exercise-card {
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+    }
+    
+    .exercise-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+    
+    .exercise-thumbnail {
+        position: relative;
+        height: 160px;
+        background-color: #f5f5f5;
+        overflow: hidden;
+    }
+    
+    .exercise-thumbnail img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .exercise-tag {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: var(--primary);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .exercise-body {
+        flex-grow: 1;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .exercise-title {
+        margin: 0 0 8px 0;
+        font-size: 1.1rem;
+    }
+    
+    .exercise-description {
+        color: var(--gray);
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+        flex-grow: 1;
+    }
+    
+    .exercise-actions {
+        margin-top: auto;
+        display: flex;
+        gap: 8px;
+    }
+    
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+        margin-bottom: 20px;
+    }
+    
+    .exercise-form {
+        position: sticky;
+        top: 85px;
+    }
+    
+    .preview-container {
+        width: 100%;
+        margin-top: 15px;
+        border-radius: 8px;
+        overflow: hidden;
+        background-color: #f5f5f5;
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .preview-container iframe,
+    .preview-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+    
+    .preview-placeholder {
+        color: var(--gray);
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .media-type-selector {
+        display: flex;
+        margin-bottom: 15px;
+        border: 1px solid var(--gray-lighter);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .media-option {
+        flex: 1;
+        padding: 8px 0;
+        text-align: center;
+        background-color: #f8f9fa;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background-color 0.2s ease;
+    }
+    
+    .media-option:hover {
+        background-color: #e9ecef;
+    }
+    
+    .media-option.active {
+        background-color: var(--primary);
+        color: white;
+    }
+    
+    /* Modal de Detalhes do Exercício */
+    .exercise-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.75);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1050;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+        overflow-y: auto;
+        padding: 20px;
+    }
+    
+    .exercise-modal.show {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    .modal-content {
+        background-color: white;
+        border-radius: 8px;
+        width: 100%;
+        max-width: 800px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        position: relative;
+        transform: translateY(20px);
+        transition: transform 0.3s ease;
+    }
+    
+    .exercise-modal.show .modal-content {
+        transform: translateY(0);
+    }
+    
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        border-bottom: 1px solid var(--gray-lighter);
+    }
+    
+    .modal-title {
+        margin: 0;
+        font-size: 1.25rem;
+    }
+    
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        line-height: 1;
+        color: var(--gray);
+        cursor: pointer;
+    }
+    
+    .modal-body {
+        padding: 20px;
+    }
+    
+    .modal-video {
+        width: 100%;
+        height: 0;
+        padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        position: relative;
+        margin-bottom: 20px;
+        background-color: #f5f5f5;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .modal-video iframe,
+    .modal-video img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+    
+    .modal-section {
+        margin-bottom: 20px;
+    }
+    
+    .modal-section-title {
+        margin: 0 0 10px 0;
+        font-size: 1.1rem;
+        color: var(--gray-dark);
+        border-bottom: 1px solid var(--gray-lighter);
+        padding-bottom: 8px;
+    }
+    
+    .modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid var(--gray-lighter);
+        text-align: right;
+    }
+    
+    /* Responsividade */
+    @media (max-width: 992px) {
+        .exercises-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .sidebar {
+            position: static;
+            top: 0;
+        }
+        
+        .exercise-form {
+            position: static;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .exercise-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .filter-group {
+            flex: 0 0 100%;
+        }
+        
+        .modal-content {
+            max-height: 95vh;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="exercises-container">
+    <!-- Sidebar com Formulário -->
+    <div class="sidebar">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Adicionar Exercício</h2>
+            </div>
+            
+            <div class="card-body">
+                <form id="exerciseForm" method="POST" action="{{ url_for('exercise_new') }}">
+                    <div class="form-group">
+                        <label for="name" class="form-label">Nome do Exercício*</label>
+                        <input type="text" id="name" name="name" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="muscle_group" class="form-label">Grupo Muscular*</label>
+                        <select id="muscle_group" name="muscle_group" class="form-control" required>
+                            <option value="">Selecione</option>
+                            <option value="Peito">Peito</option>
+                            <option value="Costas">Costas</option>
+                            <option value="Ombros">Ombros</option>
+                            <option value="Bíceps">Bíceps</option>
+                            <option value="Tríceps">Tríceps</option>
+                            <option value="Pernas">Pernas</option>
+                            <option value="Glúteos">Glúteos</option>
+                            <option value="Abdômen">Abdômen</option>
+                            <option value="Panturrilha">Panturrilha</option>
+                            <option value="Lombar">Lombar</option>
+                            <option value="Cardio">Cardio</option>
+                            <option value="Corpo inteiro">Corpo inteiro</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description" class="form-label">Descrição e Técnica*</label>
+                        <textarea id="description" name="description" class="form-control" rows="4" required 
+                            placeholder="Descreva como executar o exercício, pontos de atenção e dicas de técnica..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Tipo de Mídia</label>
+                        <div class="media-type-selector">
+                            <div class="media-option active" data-target="youtube">
+                                <i class="fab fa-youtube"></i> YouTube
+                            </div>
+                            <div class="media-option" data-target="shorts">
+                                <i class="fas fa-mobile-alt"></i> Shorts
+                            </div>
+                            <div class="media-option" data-target="gif">
+                                <i class="fas fa-image"></i> GIF
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="youtube_container" class="form-group">
+                        <label for="video_url" class="form-label">URL do Vídeo</label>
+                        <input type="url" id="video_url" name="video_url" class="form-control" 
+                               placeholder="https://www.youtube.com/watch?v=XXXX">
+                    </div>
+                    
+                    <div id="shorts_container" class="form-group" style="display: none;">
+                        <label for="shorts_url" class="form-label">URL do Shorts</label>
+                        <input type="url" id="shorts_url" name="shorts_url" class="form-control" 
+                               placeholder="https://youtube.com/shorts/XXXX">
+                    </div>
+                    
+                    <div id="gif_container" class="form-group" style="display: none;">
+                        <label for="gif_url" class="form-label">URL da Imagem GIF</label>
+                        <input type="url" id="gif_url" name="gif_url" class="form-control" 
+                               placeholder="https://example.com/animation.gif">
+                    </div>
+                    
+                    <div class="preview-container" id="mediaPreview">
+                        <div class="preview-placeholder">
+                            <i class="fas fa-film fa-2x"></i>
+                            <p>Prévia do vídeo/imagem</p>
+                        </div>
+                    </div>
+                    
+                    <input type="hidden" name="media_type" id="media_type" value="youtube">
+                    
+                    <div class="form-buttons">
+                        <button type="reset" class="btn btn-secondary">Limpar</button>
+                        <button type="submit" class="btn btn-primary">Salvar Exercício</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Conteúdo Principal -->
+    <div class="exercise-content">
+        <!-- Filtros -->
+        <div class="card filter-card">
+            <div class="card-body">
+                <form method="GET" action="{{ url_for('exercises') }}" class="filter-container">
+                    <div class="filter-group">
+                        <label for="search" class="filter-label">Buscar por nome</label>
+                        <input type="text" id="search" name="search" class="form-control" 
+                               placeholder="Nome do exercício..." value="{{ search_term }}">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="muscle" class="filter-label">Grupo Muscular</label>
+                        <select id="muscle" name="muscle" class="form-control">
+                            <option value="">Todos os grupos</option>
+                            {% for group in muscle_groups %}
+                                <option value="{{ group }}" {% if selected_muscle == group %}selected{% endif %}>
+                                    {{ group }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group" style="align-self: flex-end;">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-filter"></i> Filtrar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Resultados -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Exercícios Disponíveis</h2>
+                <div class="results-count">
+                    Mostrando {{ exercises|length }} de {{ total_exercises }} exercícios
+                </div>
+            </div>
+            
+            <div class="card-body">
+                {% if exercises %}
+                <div class="exercise-grid">
+                    {% for exercise in exercises %}
+                    <div class="exercise-card">
+                        <div class="exercise-thumbnail">
+                            {% if exercise.video_url %}
+                                {% if 'youtube.com/watch' in exercise.video_url %}
+                                    {% set video_id = exercise.video_url.split('v=')[1].split('&')[0] if 'v=' in exercise.video_url else '' %}
+                                    <img src="https://img.youtube.com/vi/{{ video_id }}/0.jpg" alt="Thumbnail do exercício {{ exercise.name }}">
+                                {% elif 'shorts' in exercise.video_url %}
+                                    {% set shorts_id = exercise.video_url.split('shorts/')[1].split('?')[0] if 'shorts/' in exercise.video_url else '' %}
+                                    <img src="https://img.youtube.com/vi/{{ shorts_id }}/0.jpg" alt="Thumbnail do exercício {{ exercise.name }}">
+                                {% elif '.gif' in exercise.video_url %}
+                                    <img src="{{ exercise.video_url }}" alt="GIF do exercício {{ exercise.name }}">
+                                {% else %}
+                                    <div class="no-thumbnail">
+                                        <i class="fas fa-dumbbell fa-3x"></i>
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <div class="no-thumbnail">
+                                    <i class="fas fa-dumbbell fa-3x"></i>
+                                </div>
+                            {% endif %}
+                            <span class="exercise-tag">{{ exercise.muscle_group }}</span>
+                        </div>
+                        
+                        <div class="exercise-body">
+                            <h3 class="exercise-title">{{ exercise.name }}</h3>
+                            <div class="exercise-description">
+                                {{ exercise.description|truncate(100) }}
+                            </div>
+                            <div class="exercise-actions">
+                                <button class="btn btn-primary" onclick="viewExercise({{ exercise.id }})">
+                                    <i class="fas fa-eye"></i> Ver
+                                </button>
+                                <a href="{{ url_for('exercise_edit', exercise_id=exercise.id) }}" class="btn btn-secondary">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Paginação -->
+                <div class="pagination-container">
+                    <ul class="pagination">
+                        {% if page > 1 %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('exercises', page=1, search=search_term, muscle=selected_muscle) }}">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('exercises', page=page-1, search=search_term, muscle=selected_muscle) }}">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                <i class="fas fa-angle-double-left"></i>
+                            </span>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                <i class="fas fa-angle-left"></i>
+                            </span>
+                        </li>
+                        {% endif %}
+                        
+                        {% for p in range(max(1, page-2), min(total_pages+1, page+3)) %}
+                        <li class="page-item {% if p == page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('exercises', page=p, search=search_term, muscle=selected_muscle) }}">
+                                {{ p }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                        
+                        {% if page < total_pages %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('exercises', page=page+1, search=search_term, muscle=selected_muscle) }}">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('exercises', page=total_pages, search=search_term, muscle=selected_muscle) }}">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                <i class="fas fa-angle-right"></i>
+                            </span>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                <i class="fas fa-angle-double-right"></i>
+                            </span>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <h3>Nenhum exercício encontrado</h3>
+                    <p>
+                        {% if search_term or selected_muscle %}
+                        Nenhum exercício corresponde aos critérios de busca. Tente outros termos ou remova os filtros.
+                        {% else %}
+                        Você ainda não possui exercícios cadastrados. Use o formulário ao lado para adicionar seu primeiro exercício.
+                        {% endif %}
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Detalhes do Exercício -->
+<div id="exerciseModal" class="exercise-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modalTitle">Nome do Exercício</h3>
+            <button type="button" class="modal-close" onclick="closeExerciseModal()">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+            <div class="modal-video" id="modalVideo">
+                <!-- Conteúdo de mídia será inserido via JavaScript -->
+            </div>
+            
+            <div class="modal-section">
+                <h4 class="modal-section-title">Grupo Muscular</h4>
+                <p id="modalMuscleGroup">Grupo muscular</p>
+            </div>
+            
+            <div class="modal-section">
+                <h4 class="modal-section-title">Descrição e Técnica</h4>
+                <p id="modalDescription">Descrição detalhada do exercício...</p>
+            </div>
+        </div>
+        
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeExerciseModal()">Fechar</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_scripts %}
+<script>
+    // Funções para controlar o modal de detalhes do exercício
+    function viewExercise(exerciseId) {
+        fetch(`/exercise/${exerciseId}`)
+            .then(response => response.json())
+            .then(exercise => {
+                document.getElementById('modalTitle').textContent = exercise.name;
+                document.getElementById('modalMuscleGroup').textContent = exercise.muscle_group;
+                document.getElementById('modalDescription').textContent = exercise.description;
+                
+                const videoContainer = document.getElementById('modalVideo');
+                
+                if (exercise.video_url) {
+                    if (exercise.video_url.includes('youtube.com/watch')) {
+                        const videoId = exercise.video_url.split('v=')[1].split('&')[0];
+                        videoContainer.innerHTML = `
+                            <iframe 
+                                src="https://www.youtube.com/embed/${videoId}" 
+                                title="YouTube video player" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen>
+                            </iframe>
+                        `;
+                    } else if (exercise.video_url.includes('shorts/')) {
+                        const videoId = exercise.video_url.split('shorts/')[1].split('?')[0];
+                        videoContainer.innerHTML = `
+                            <iframe 
+                                src="https://www.youtube.com/embed/${videoId}" 
+                                title="YouTube Shorts player" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen>
+                            </iframe>
+                        `;
+                    } else if (exercise.video_url.includes('.gif')) {
+                        videoContainer.innerHTML = `
+                            <img src="${exercise.video_url}" alt="Demonstração do exercício">
+                        `;
+                    } else {
+                        videoContainer.innerHTML = '<div class="preview-placeholder"><p>Nenhuma mídia disponível</p></div>';
+                    }
+                } else {
+                    videoContainer.innerHTML = '<div class="preview-placeholder"><p>Nenhuma mídia disponível</p></div>';
+                }
+                
+                document.getElementById('exerciseModal').classList.add('show');
+                document.body.style.overflow = 'hidden';
+            })
+            .catch(error => {
+                console.error('Erro ao buscar detalhes do exercício:', error);
+                alert('Erro ao buscar detalhes do exercício. Por favor, tente novamente.');
+            });
+    }
+    
+    function closeExerciseModal() {
+        document.getElementById('exerciseModal').classList.remove('show');
+        document.body.style.overflow = '';
+    }
+    
+    // Opções de tipo de mídia
+    document.querySelectorAll('.media-option').forEach(option => {
+        option.addEventListener('click', function() {
+            // Remover classe active de todas as opções
+            document.querySelectorAll('.media-option').forEach(opt => opt.classList.remove('active'));
+            
+            // Adicionar classe active na opção clicada
+            this.classList.add('active');
+            
+            // Obter o tipo de mídia selecionado
+            const mediaType = this.getAttribute('data-target');
+            document.getElementById('media_type').value = mediaType;
+            
+            // Esconder todos os containers de mídia
+            document.getElementById('youtube_container').style.display = 'none';
+            document.getElementById('shorts_container').style.display = 'none';
+            document.getElementById('gif_container').style.display = 'none';
+            
+            // Mostrar apenas o container relevante
+            document.getElementById(mediaType + '_container').style.display = 'block';
+            
+            // Limpar a prévia
+            document.getElementById('mediaPreview').innerHTML = `
+                <div class="preview-placeholder">
+                    <i class="fas fa-film fa-2x"></i>
+                    <p>Prévia do vídeo/imagem</p>
+                </div>
+            `;
+        });
+    });
+    
+    // Função para pré-visualizar mídia
+    function previewMedia() {
+        const mediaType = document.getElementById('media_type').value;
+        const previewContainer = document.getElementById('mediaPreview');
+        
+        if (mediaType === 'youtube') {
+            const videoUrl = document.getElementById('video_url').value;
+            if (videoUrl && videoUrl.includes('youtube.com') && videoUrl.includes('v=')) {
+                const videoId = videoUrl.split('v=')[1].split('&')[0];
+                previewContainer.innerHTML = `
+                    <iframe 
+                        src="https://www.youtube.com/embed/${videoId}" 
+                        title="YouTube video player" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
+                `;
+            }
+        } else if (mediaType === 'shorts') {
+            const shortsUrl = document.getElementById('shorts_url').value;
+            if (shortsUrl && shortsUrl.includes('shorts/')) {
+                const videoId = shortsUrl.split('shorts/')[1].split('?')[0];
+                previewContainer.innerHTML = `
+                    <iframe 
+                        src="https://www.youtube.com/embed/${videoId}" 
+                        title="YouTube Shorts player" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
+                `;
+            }
+        } else if (mediaType === 'gif') {
+            const gifUrl = document.getElementById('gif_url').value;
+            if (gifUrl && (gifUrl.endsWith('.gif') || gifUrl.includes('.gif'))) {
+                previewContainer.innerHTML = `
+                    <img src="${gifUrl}" alt="Demonstração do exercício">
+                `;
+            }
+        }
+    }
+    
+    // Adicionar event listeners para inputs de mídia
+    document.getElementById('video_url').addEventListener('input', previewMedia);
+    document.getElementById('shorts_url').addEventListener('input', previewMedia);
+    document.getElementById('gif_url').addEventListener('input', previewMedia);
+    
+    // Fechar modal quando clicar fora dele
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('exerciseModal');
+        if (event.target === modal) {
+            closeExerciseModal();
+        }
+    });
+    
+    // Prevenir o envio do formulário se não houver mídia selecionada
+    document.getElementById('exerciseForm').addEventListener('submit', function(event) {
+        const mediaType = document.getElementById('media_type').value;
+        let mediaUrl = '';
+        
+        if (mediaType === 'youtube') {
+            mediaUrl = document.getElementById('video_url').value;
+        } else if (mediaType === 'shorts') {
+            mediaUrl = document.getElementById('shorts_url').value;
+        } else if (mediaType === 'gif') {
+            mediaUrl = document.getElementById('gif_url').value;
+        }
+        
+        // Se não houver url de mídia, adicionar a input correta
+        if (mediaType === 'youtube') {
+            document.getElementById('video_url').value = mediaUrl;
+        } else if (mediaType === 'shorts') {
+            document.getElementById('shorts_url').value = mediaUrl;
+        } else if (mediaType === 'gif') {
+            document.getElementById('gif_url').value = mediaUrl;
+        }
+    });
+    
+    // Tecla Escape para fechar o modal
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeExerciseModal();
+        }
+    });
+    {% endblock %}
