@@ -1,182 +1,594 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MegaPersonal - Clientes</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f7f6;
-            margin: 0;
-            padding: 0;
+{% extends "base.html" %}
+
+{% block title %}MegaPersonal - Gerenciar Clientes{% endblock %}
+
+{% block page_title %}Gerenciar Clientes{% endblock %}
+
+{% block page_actions %}
+<a href="{{ url_for('client_new') }}" class="btn btn-primary">
+    <i class="fas fa-user-plus"></i> Adicionar Cliente
+</a>
+{% endblock %}
+
+{% block additional_styles %}
+<style>
+    .search-container {
+        margin-bottom: 20px;
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 20px;
+    }
+    
+    .search-box-wrapper {
+        position: relative;
+        max-width: 500px;
+    }
+    
+    .search-box {
+        width: 100%;
+        padding: 10px 15px 10px 40px;
+        border: 1px solid var(--gray-lighter);
+        border-radius: 30px;
+        transition: all 0.3s ease;
+    }
+    
+    .search-box:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(219, 127, 52, 0.1);
+    }
+    
+    .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray);
+    }
+    
+    .client-list-wrapper {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        overflow: hidden;
+    }
+    
+    .client-list-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--gray-lighter);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .client-list-title {
+        margin: 0;
+        color: var(--gray-dark);
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+    
+    .client-list-filter {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .client-list-filter select {
+        padding: 8px 12px;
+        border: 1px solid var(--gray-lighter);
+        border-radius: 4px;
+        color: var(--gray-dark);
+        background-color: white;
+        font-size: 0.9rem;
+    }
+    
+    .client-list-filter select:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+    
+    .client-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        padding: 20px;
+    }
+    
+    .client-card {
+        background-color: white;
+        border: 1px solid var(--gray-lighter);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .client-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .client-card-header {
+        padding: 15px;
+        background-color: var(--primary-bg);
+        border-bottom: 1px solid var(--gray-lighter);
+        position: relative;
+    }
+    
+    .client-avatar {
+        width: 50px;
+        height: 50px;
+        background-color: var(--primary);
+        border-radius: 50%;
+        color: white;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .client-name {
+        margin: 0 0 5px 0;
+        padding-right: 60px;
+        font-weight: 600;
+        color: var(--primary-dark);
+    }
+    
+    .client-goal {
+        margin: 0;
+        color: var(--gray);
+        font-size: 0.9rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        padding-right: 60px;
+    }
+    
+    .client-card-body {
+        padding: 15px;
+    }
+    
+    .client-info-item {
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .client-info-item i {
+        width: 20px;
+        margin-right: 10px;
+        color: var(--primary);
+    }
+    
+    .client-info-label {
+        color: var(--gray);
+        font-size: 0.85rem;
+    }
+    
+    .client-info-value {
+        margin-left: auto;
+        color: var(--gray-dark);
+        font-weight: 500;
+    }
+    
+    .client-card-footer {
+        border-top: 1px solid var(--gray-lighter);
+        padding: 15px;
+        text-align: right;
+    }
+    
+    .client-card-footer .btn {
+        margin-left: 5px;
+    }
+    
+    .client-table {
+        width: 100%;
+    }
+    
+    .client-table th {
+        text-align: left;
+        padding: 15px;
+        background-color: var(--gray-lighter);
+        color: var(--gray-dark);
+        font-weight: 600;
+    }
+    
+    .client-table td {
+        padding: 15px;
+        border-bottom: 1px solid var(--gray-lighter);
+    }
+    
+    .client-table tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .client-table tr:hover {
+        background-color: var(--gray-lighter);
+    }
+    
+    .view-toggle {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .view-toggle button {
+        background: none;
+        border: none;
+        padding: 5px;
+        cursor: pointer;
+        color: var(--gray);
+        transition: color 0.3s ease;
+    }
+    
+    .view-toggle button.active {
+        color: var(--primary);
+    }
+    
+    .view-toggle button:hover {
+        color: var(--primary-dark);
+    }
+    
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+    
+    /* Responsiveness */
+    @media (max-width: 768px) {
+        .client-list-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        header {
-            background-color: #db7f34;
-            color: white;
-            padding: 15px 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        .logo h1 {
-            margin: 0;
-        }
-        .user-info {
-            display: flex;
-            align-items: center;
-        }
-        .user-info a {
-            color: white;
-            text-decoration: none;
-            margin-left: 15px;
-        }
-        .user-info a:hover {
-            text-decoration: underline;
-        }
-        .navbar {
-            background-color: #db7f34;
-            padding: 10px 0;
-        }
-        .nav-links {
-            display: flex;
-            list-style: none;
-            margin: 0;
-            padding: 0 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .nav-links li {
-            margin-right: 20px;
-        }
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            padding: 5px 0;
-        }
-        .nav-links a:hover {
-            border-bottom: 2px solid white;
-        }
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .button {
-            background-color: #db7f34;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            text-decoration: none;
-            display: inline-block;
-            cursor: pointer;
-        }
-        .button:hover {
-            background-color: #db7f34;
-        }
-        .clients-list {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            padding: 20px;
-        }
-        table {
+        
+        .client-list-filter {
             width: 100%;
-            border-collapse: collapse;
         }
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #f4f7f6;
-            font-weight: bold;
-        }
-        .search-box {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            width: 300px;
-            margin-bottom: 20px;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <div class="header-content">
-            <div class="logo">
-                <h1>MegaPersonal</h1>
-            </div>
-            <div class="user-info">
-                <span>Bem-vindo, {{ trainer.name }}</span>
-                <a href="{{ url_for('logout') }}">Sair</a>
-            </div>
-        </div>
-    </header>
-    
-    <nav class="navbar">
-        <ul class="nav-links">
-            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-            <li><a href="{{ url_for('client_list') }}">Clientes</a></li>
-            <li><a href="{{ url_for('exercises') }}">Exercícios</a></li>
-            <li><a href="{{ url_for('workout_templates') }}">Templates de Treino</a></li>
-            <li><a href="{{ url_for('attendance_list') }}">Presenças</a></li>
-        </ul>
-    </nav>
-    
-    <div class="container">
-        <div class="page-header">
-            <h1>Gerenciar Clientes</h1>
-            <a href="{{ url_for('client_new') }}" class="button">Adicionar Cliente</a>
-        </div>
         
-        <input type="text" class="search-box" placeholder="Buscar cliente por nome ou email...">
+        .client-list-filter select {
+            flex-grow: 1;
+        }
         
-        <div class="clients-list">
-            {% if clients %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Email</th>
-                        <th>Telefone</th>
-                        <th>Objetivo</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for client in clients %}
-                    <tr>
-                        <td>{{ client.name }}</td>
-                        <td>{{ client.email }}</td>
-                        <td>{{ client.phone }}</td>
-                        <td>{{ client.goal }}</td>
-                        <td>
-                            <a href="{{ url_for('client_detail', client_id=client.id) }}" class="button">Ver</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <p>Você ainda não tem clientes cadastrados.</p>
-            <p><a href="{{ url_for('client_new') }}">Clique aqui</a> para adicionar seu primeiro cliente.</p>
-            {% endif %}
+        .client-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Barra de pesquisa -->
+<div class="search-container">
+    <div class="search-box-wrapper">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="searchClient" class="search-box" placeholder="Buscar cliente por nome, email ou telefone..." />
+    </div>
+</div>
+
+<!-- Lista de clientes -->
+<div class="client-list-wrapper">
+    <div class="client-list-header">
+        <h2 class="client-list-title">
+            <i class="fas fa-users"></i> Clientes
+        </h2>
+        
+        <div class="client-actions">
+            <div class="client-list-filter">
+                <select id="statusFilter">
+                    <option value="all">Todos os status</option>
+                    <option value="active">Ativos</option>
+                    <option value="inactive">Inativos</option>
+                </select>
+                
+                <select id="sortOrder">
+                    <option value="name">Nome (A-Z)</option>
+                    <option value="recent">Mais recentes</option>
+                    <option value="goal">Objetivo</option>
+                </select>
+                
+                <div class="view-toggle">
+                    <button id="gridViewBtn" class="active" title="Visualização em Grid">
+                        <i class="fas fa-th-large"></i>
+                    </button>
+                    <button id="listViewBtn" title="Visualização em Lista">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
-</body>
-</html>
+    
+    {% if clients %}
+    <!-- Visualização em Grid (padrão) -->
+    <div id="gridView" class="client-grid">
+        {% for client in clients %}
+        <div class="client-card">
+            <div class="client-card-header">
+                <h3 class="client-name">{{ client.name }}</h3>
+                <p class="client-goal">{{ client.goal }}</p>
+                <div class="client-avatar">{{ client.name[0].upper() }}</div>
+            </div>
+            
+            <div class="client-card-body">
+                <div class="client-info-item">
+                    <i class="fas fa-envelope"></i>
+                    <span class="client-info-label">Email:</span>
+                    <span class="client-info-value">{{ client.email }}</span>
+                </div>
+                
+                <div class="client-info-item">
+                    <i class="fas fa-phone"></i>
+                    <span class="client-info-label">Telefone:</span>
+                    <span class="client-info-value">{{ client.phone }}</span>
+                </div>
+                
+                {% if client.age %}
+                <div class="client-info-item">
+                    <i class="fas fa-birthday-cake"></i>
+                    <span class="client-info-label">Idade:</span>
+                    <span class="client-info-value">{{ client.age }} anos</span>
+                </div>
+                {% endif %}
+                
+                {% if client.weight %}
+                <div class="client-info-item">
+                    <i class="fas fa-weight"></i>
+                    <span class="client-info-label">Peso:</span>
+                    <span class="client-info-value">{{ client.weight|round(1) }} kg</span>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="client-card-footer">
+                <a href="{{ url_for('client_detail', client_id=client.id) }}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-eye"></i> Ver
+                </a>
+                <a href="{{ url_for('client_edit', client_id=client.id) }}" class="btn btn-secondary btn-sm">
+                    <i class="fas fa-pen"></i> Editar
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Visualização em Lista (inicialmente oculta) -->
+    <div id="listView" class="table-responsive" style="display: none;">
+        <table class="client-table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Telefone</th>
+                    <th>Objetivo</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for client in clients %}
+                <tr>
+                    <td>
+                        <div style="display: flex; align-items: center;">
+                            <div style="width: 30px; height: 30px; background-color: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                                {{ client.name[0].upper() }}
+                            </div>
+                            {{ client.name }}
+                        </div>
+                    </td>
+                    <td>{{ client.email }}</td>
+                    <td>{{ client.phone }}</td>
+                    <td>{{ client.goal }}</td>
+                    <td>
+                        <a href="{{ url_for('client_detail', client_id=client.id) }}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-eye"></i> Ver
+                        </a>
+                        <a href="{{ url_for('client_edit', client_id=client.id) }}" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-pen"></i> Editar
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <!-- Estado vazio -->
+    <div class="empty-state">
+        <div class="empty-icon">
+            <i class="fas fa-users"></i>
+        </div>
+        <h3>Você ainda não tem clientes cadastrados</h3>
+        <p>Adicione seu primeiro cliente para começar a gerenciar seus treinos e acompanhamento.</p>
+        <a href="{{ url_for('client_new') }}" class="btn btn-primary">
+            <i class="fas fa-user-plus"></i> Adicionar Primeiro Cliente
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+{% if clients|length > 20 %}
+<!-- Paginação -->
+<div class="pagination-container">
+    <ul class="pagination">
+        <li class="page-item disabled">
+            <span class="page-link"><i class="fas fa-chevron-left"></i></span>
+        </li>
+        <li class="page-item active">
+            <span class="page-link">1</span>
+        </li>
+        <li class="page-item">
+            <a href="#" class="page-link">2</a>
+        </li>
+        <li class="page-item">
+            <a href="#" class="page-link">3</a>
+        </li>
+        <li class="page-item">
+            <a href="#" class="page-link"><i class="fas fa-chevron-right"></i></a>
+        </li>
+    </ul>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block additional_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Elementos do DOM
+        const searchBox = document.getElementById('searchClient');
+        const statusFilter = document.getElementById('statusFilter');
+        const sortOrder = document.getElementById('sortOrder');
+        const gridViewBtn = document.getElementById('gridViewBtn');
+        const listViewBtn = document.getElementById('listViewBtn');
+        const gridView = document.getElementById('gridView');
+        const listView = document.getElementById('listView');
+        
+        // Alternar entre visualizações de grid e lista
+        gridViewBtn.addEventListener('click', function() {
+            gridViewBtn.classList.add('active');
+            listViewBtn.classList.remove('active');
+            gridView.style.display = 'grid';
+            listView.style.display = 'none';
+            
+            // Persistir escolha no localStorage
+            localStorage.setItem('clientViewPreference', 'grid');
+        });
+        
+        listViewBtn.addEventListener('click', function() {
+            listViewBtn.classList.add('active');
+            gridViewBtn.classList.remove('active');
+            listView.style.display = 'block';
+            gridView.style.display = 'none';
+            
+            // Persistir escolha no localStorage
+            localStorage.setItem('clientViewPreference', 'list');
+        });
+        
+        // Carregar preferência salva
+        const savedViewPreference = localStorage.getItem('clientViewPreference');
+        if (savedViewPreference === 'list') {
+            listViewBtn.click();
+        }
+        
+        // Função para filtrar clientes
+        function filterClients() {
+            const searchTerm = searchBox.value.toLowerCase();
+            const status = statusFilter.value;
+            
+            // Selecionar todos os cards de cliente (no grid e na lista)
+            const gridCards = gridView.querySelectorAll('.client-card');
+            const listRows = listView.querySelectorAll('tbody tr');
+            
+            // Filtrar grid
+            gridCards.forEach(card => {
+                const name = card.querySelector('.client-name').textContent.toLowerCase();
+                const email = card.querySelector('.client-info-value').textContent.toLowerCase();
+                const goal = card.querySelector('.client-goal').textContent.toLowerCase();
+                
+                const matchesSearch = name.includes(searchTerm) || 
+                                     email.includes(searchTerm) || 
+                                     goal.includes(searchTerm);
+                
+                // Aplicar filtro de status (simulado, em projeto real precisaria de dados reais de status)
+                const matchesStatus = status === 'all' || 
+                                     (status === 'active' && Math.random() > 0.2) || 
+                                     (status === 'inactive' && Math.random() <= 0.2);
+                
+                if (matchesSearch && matchesStatus) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Filtrar lista
+            listRows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                const name = cells[0].textContent.toLowerCase();
+                const email = cells[1].textContent.toLowerCase();
+                const goal = cells[3].textContent.toLowerCase();
+                
+                const matchesSearch = name.includes(searchTerm) || 
+                                     email.includes(searchTerm) || 
+                                     goal.includes(searchTerm);
+                
+                // Aplicar filtro de status (simulado)
+                const matchesStatus = status === 'all' || 
+                                     (status === 'active' && Math.random() > 0.2) || 
+                                     (status === 'inactive' && Math.random() <= 0.2);
+                
+                if (matchesSearch && matchesStatus) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+        
+        // Função para ordenar clientes
+        function sortClients() {
+            const sort = sortOrder.value;
+            const gridCards = Array.from(gridView.querySelectorAll('.client-card'));
+            const listRows = Array.from(listView.querySelectorAll('tbody tr'));
+            
+            // Ordenar cards do grid
+            gridCards.sort((a, b) => {
+                if (sort === 'name') {
+                    const nameA = a.querySelector('.client-name').textContent;
+                    const nameB = b.querySelector('.client-name').textContent;
+                    return nameA.localeCompare(nameB);
+                } else if (sort === 'goal') {
+                    const goalA = a.querySelector('.client-goal').textContent;
+                    const goalB = b.querySelector('.client-goal').textContent;
+                    return goalA.localeCompare(goalB);
+                }
+                // Para 'recent', manter ordem original (simula ordenação por data de registro)
+                return 0;
+            });
+            
+            // Reordenar no DOM
+            gridCards.forEach(card => {
+                gridView.appendChild(card);
+            });
+            
+            // Ordenar linhas da tabela
+            listRows.sort((a, b) => {
+                const cellsA = a.querySelectorAll('td');
+                const cellsB = b.querySelectorAll('td');
+                
+                if (sort === 'name') {
+                    return cellsA[0].textContent.localeCompare(cellsB[0].textContent);
+                } else if (sort === 'goal') {
+                    return cellsA[3].textContent.localeCompare(cellsB[3].textContent);
+                }
+                // Para 'recent', manter ordem original
+                return 0;
+            });
+            
+            // Reordenar no DOM
+            const tbody = listView.querySelector('tbody');
+            listRows.forEach(row => {
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Adicionar eventos
+        searchBox.addEventListener('input', filterClients);
+        statusFilter.addEventListener('change', filterClients);
+        sortOrder.addEventListener('change', sortClients);
+        
+        // Animação para os cards
+        const clientCards = document.querySelectorAll('.client-card');
+        clientCards.forEach((card, index) => {
+            setTimeout(() => {
+                card.classList.add('fade-in');
+            }, 100 * index);
+        });
+    });
+</script>
+{% endblock %}

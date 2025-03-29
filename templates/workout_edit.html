@@ -1,317 +1,254 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MegaPersonal - Editar Treino</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f7f6;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        header {
-            background-color: #db7f34;
-            color: white;
-            padding: 15px 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        .logo h1 {
-            margin: 0;
-        }
-        .user-info {
-            display: flex;
-            align-items: center;
-        }
-        .user-info a {
-            color: white;
-            text-decoration: none;
-            margin-left: 15px;
-        }
-        .user-info a:hover {
-            text-decoration: underline;
-        }
-        .navbar {
-            background-color: #db7f34;
-            padding: 10px 0;
-        }
-        .nav-links {
-            display: flex;
-            list-style: none;
-            margin: 0;
-            padding: 0 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .nav-links li {
-            margin-right: 20px;
-        }
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            padding: 5px 0;
-        }
-        .nav-links a:hover {
-            border-bottom: 2px solid white;
-        }
-        .page-header {
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .form-container, .exercise-list {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input[type="text"],
-        input[type="number"],
-        textarea, 
-        select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        textarea {
-            min-height: 100px;
-        }
-        .button-container {
-            margin-top: 20px;
-            text-align: right;
-        }
-        .button {
-            background-color: #db7f34;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .button:hover {
-            background-color: #db7f34;
-        }
-        .button.secondary {
-            background-color: #95a5a6;
-        }
-        .button.secondary:hover {
-            background-color: #7f8c8d;
-        }
-        .client-info {
-            background-color: #f4f7f6;
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-        .client-info p {
-            margin: 0;
-        }
-        .client-info strong {
-            color: #db7f34;
-        }
-        .workout-details {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-        .workout-info {
-            flex: 2;
-            padding-right: 20px;
-        }
-        .workout-actions {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: flex-end;
-        }
-        .workout-actions .button {
-            margin-bottom: 10px;
-            width: 200px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #f4f7f6;
-            font-weight: bold;
-        }
-        .exercise-form {
-            margin-top: 30px;
-            border-top: 1px solid #ddd;
-            padding-top: 20px;
-        }
-        .form-row {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 15px;
-        }
-        .form-group {
-            flex: 1;
-        }
-        .flash-messages {
+{% extends "base.html" %}
+
+{% block title %}MegaPersonal - Editar Treino{% endblock %}
+
+{% block page_title %}Editar Treino - {{ workout.name }}{% endblock %}
+
+{% block page_actions %}
+<a href="{{ url_for('client_detail', client_id=client.id) }}" class="btn btn-secondary">
+    <i class="fas fa-arrow-left"></i> Voltar para Cliente
+</a>
+{% endblock %}
+
+{% block additional_styles %}
+<style>
+    .client-info {
+        background-color: var(--primary-bg);
+        border-radius: var(--border-radius);
+        padding: 20px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .client-details {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .client-name {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--primary-dark);
+        margin-bottom: 5px;
+    }
+    
+    .client-goal {
+        color: var(--gray);
+    }
+    
+    .workout-details {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 20px;
+        background-color: white;
+        padding: 20px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+    }
+    
+    .workout-info {
+        flex: 2;
+        padding-right: 20px;
+    }
+    
+    .workout-info h2 {
+        margin-top: 0;
+        color: var(--gray-dark);
+    }
+    
+    .workout-info p {
+        color: var(--gray);
+    }
+    
+    .workout-actions {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-end;
+    }
+    
+    .exercise-list {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
         margin-bottom: 20px;
     }
-    .flash-message {
-        padding: 12px 15px;
-        border-radius: 4px;
-        margin-bottom: 10px;
-        position: relative;
+    
+    .exercise-list-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--gray-lighter);
     }
-    .flash-message.success {
-        background-color: #d4edda;
-        color: #155724;
-        border: 1px solid #c3e6cb;
+    
+    .exercise-list-body {
+        padding: 20px;
     }
-    .flash-message.error {
-        background-color: #f8d7da;
-        color: #721c24;
-        border: 1px solid #f5c6cb;
-    }
-    .flash-message.info {
-        background-color: #d1ecf1;
-        color: #0c5460;
-        border: 1px solid #bee5eb;
-    }
-    .flash-message.warning {
-        background-color: #fff3cd;
-        color: #856404;
-        border: 1px solid #ffeeba;
-    }
-    .close-flash {
-        position: absolute;
-        right: 10px;
-        top: 10px;
-        cursor: pointer;
-        font-weight: bold;
-    }
-    .close-flash:hover {
-        color: #555;
-    }
-    /* Estilo para campo de pesquisa */
-    .search-box {
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
+    
+    .exercise-table {
         width: 100%;
-        box-sizing: border-box;
-        margin-bottom: 10px;
     }
-    .search-box:focus {
-        border-color: #db7f34;
-        outline: none;
+    
+    .exercise-table th {
+        text-align: left;
+        padding: 12px 15px;
+        border-bottom: 1px solid var(--gray-lighter);
+        font-weight: 600;
+        color: var(--gray-dark);
     }
-    .filter-row {
+    
+    .exercise-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid var(--gray-lighter);
+    }
+    
+    .exercise-table tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .exercise-table tr:hover {
+        background-color: var(--gray-lighter);
+    }
+    
+    .exercise-form {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 20px;
+        margin-top: 30px;
+    }
+    
+    .exercise-form-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--gray-lighter);
+    }
+    
+    .exercise-form-title {
+        margin: 0;
+        color: var(--gray-dark);
+    }
+    
+    .form-row {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 15px;
+    }
+    
+    .filter-container {
         display: flex;
         gap: 10px;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
     }
-    .filter-row select {
-        flex: 1;
+    
+    /* Status badges */
+    .badge {
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 600;
     }
-    </style>
-</head>
-<body>
-    <header>
-        <div class="header-content">
-            <div class="logo">
-                <h1>MegaPersonal</h1>
-            </div>
-            <div class="user-info">
-                <span>Bem-vindo, {{ session.get('trainer_name', 'Treinador') }}</span>
-                <a href="{{ url_for('logout') }}">Sair</a>
-            </div>
-        </div>
-    </header>
     
-    <nav class="navbar">
-        <ul class="nav-links">
-            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-            <li><a href="{{ url_for('client_list') }}">Clientes</a></li>
-            <li><a href="{{ url_for('exercises') }}">Exercícios</a></li>
-            <li><a href="{{ url_for('workout_templates') }}">Templates de Treino</a></li>
-            <li><a href="{{ url_for('attendance_list') }}">Presenças</a></li>
-        </ul>
-    </nav>
+    .badge-primary {
+        background-color: #e9f3fe;
+        color: #2c84f4;
+    }
     
-    <div class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <div class="flash-messages">
-            {% for category, message in messages %}
-            <div class="flash-message {{ category }}">
-                {{ message }}
-                <span class="close-flash" onclick="this.parentElement.style.display='none';">&times;</span>
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-        {% endwith %}
-        <div class="page-header">
-            <h1>Editar Treino</h1>
-            <a href="{{ url_for('client_detail', client_id=client.id) }}" class="button secondary">Voltar para Cliente</a>
-        </div>
+    .badge-success {
+        background-color: #d4edda;
+        color: #28a745;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 992px) {
+        .workout-details {
+            flex-direction: column;
+        }
         
-        <div class="client-info">
-            <p>Cliente: <strong>{{ client.name }}</strong></p>
-            <p>Objetivo: <strong>{{ client.goal }}</strong></p>
-        </div>
+        .workout-info {
+            padding-right: 0;
+            margin-bottom: 20px;
+        }
         
-        <div class="form-container">
-            <div class="workout-details">
-                <div class="workout-info">
-                    <h2>{{ workout.name }}</h2>
-                    <p>{{ workout.description }}</p>
-                    <p><small>Criado em: {{ workout.created_date.strftime('%d/%m/%Y') }}</small></p>
-                </div>
-                <div class="workout-actions">
-                    <a href="#" class="button">Editar Informações</a>
-                    <a href="#" class="button secondary">Imprimir Treino</a>
-                </div>
-            </div>
-            
-            <h3>Exercícios do Treino</h3>
-            
-            {% if workout_exercises %}
-            <table>
+        .workout-actions {
+            align-items: flex-start;
+        }
+        
+        .workout-actions .btn {
+            width: 100%;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .form-row {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .client-info {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .exercise-table {
+            font-size: 0.9rem;
+        }
+        
+        .exercise-table th, .exercise-table td {
+            padding: 8px 10px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Informações do cliente -->
+<div class="client-info">
+    <div class="client-details">
+        <div class="client-name">{{ client.name }}</div>
+        <div class="client-goal">{{ client.goal }}</div>
+    </div>
+    <div>
+        <a href="#" class="btn btn-primary btn-sm">
+            <i class="fas fa-user"></i> Ver Perfil Completo
+        </a>
+    </div>
+</div>
+
+<!-- Detalhes do treino -->
+<div class="workout-details">
+    <div class="workout-info">
+        <h2>{{ workout.name }}</h2>
+        <p>{{ workout.description }}</p>
+        <p><small>Criado em: {{ workout.created_date.strftime('%d/%m/%Y') }}</small></p>
+    </div>
+    <div class="workout-actions">
+        <a href="#" class="btn btn-primary">
+            <i class="fas fa-pen"></i> Editar Informações
+        </a>
+        <a href="#" class="btn btn-secondary">
+            <i class="fas fa-print"></i> Imprimir Treino
+        </a>
+    </div>
+</div>
+
+<!-- Lista de exercícios -->
+<div class="exercise-list">
+    <div class="exercise-list-header">
+        <h3><i class="fas fa-list"></i> Exercícios do Treino</h3>
+    </div>
+    <div class="exercise-list-body">
+        {% if workout_exercises %}
+        <div class="table-responsive">
+            <table class="exercise-table">
                 <thead>
                     <tr>
-                        <th>Ordem</th>
+                        <th width="60">Ordem</th>
                         <th>Exercício</th>
                         <th>Séries</th>
                         <th>Repetições</th>
@@ -322,214 +259,232 @@
                 <tbody>
                     {% for we in workout_exercises %}
                     <tr>
-                        <td>{{ we.order }}</td>
-                        <td>{{ we.exercise.name }}</td>
+                        <td><span class="badge badge-primary">{{ we.order }}</span></td>
+                        <td>{{ we.exercise.name }} <span class="badge badge-success">{{ we.exercise.muscle_group }}</span></td>
                         <td>{{ we.sets }}</td>
                         <td>{{ we.reps }}</td>
                         <td>{{ we.rest_time }}s</td>
                         <td>
-                            <button type="button" class="button" onclick="editExercise({{ we.id }}, {{ we.order }}, {{ we.sets }}, '{{ we.reps }}', {{ we.rest_time }}, '{{ we.notes|replace('\n', ' ')|replace("'", "\\'") }}', {{ we.exercise_id }})">Editar</button>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="editExercise({{ we.id }}, {{ we.order }}, {{ we.sets }}, '{{ we.reps }}', {{ we.rest_time }}, '{{ we.notes|replace('\n', ' ')|replace("'", "\\'") }}', {{ we.exercise_id }})">
+                                <i class="fas fa-edit"></i>
+                            </button>
                             <form method="POST" action="{{ url_for('workout_edit', workout_id=workout.id) }}" style="display: inline; margin-left: 5px;">
                                 <input type="hidden" name="remove_exercise_id" value="{{ we.id }}">
-                                <button type="submit" class="button secondary">Remover</button>
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </form>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-            {% else %}
-            <p>Nenhum exercício adicionado ainda.</p>
-            {% endif %}
-            
-            <div class="exercise-form">
-                <h3 id="formTitle">Adicionar Exercício</h3>
-                <form id="exerciseForm" method="POST" action="{{ url_for('workout_edit', workout_id=workout.id) }}">
-                    <input type="hidden" id="edit_mode" name="edit_mode" value="0">
-                    <input type="hidden" id="exercise_id_to_edit" name="exercise_id_to_edit" value="">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Buscar Exercício</label>
-                            <input type="text" id="exerciseSearch" class="search-box" placeholder="Digite para buscar exercícios...">
-                            
-                            <div class="filter-row">
-                                <select id="muscleFilter">
-                                    <option value="">Todos os Grupos Musculares</option>
-                                    <option value="Peito">Peito</option>
-                                    <option value="Costas">Costas</option>
-                                    <option value="Ombros">Ombros</option>
-                                    <option value="Bíceps">Bíceps</option>
-                                    <option value="Tríceps">Tríceps</option>
-                                    <option value="Pernas">Pernas</option>
-                                    <option value="Glúteos">Glúteos</option>
-                                    <option value="Abdômen">Abdômen</option>
-                                    <option value="Panturrilha">Panturrilha</option>
-                                    <option value="Lombar">Lombar</option>
-                                    <option value="Cardio">Cardio</option>
-                                    <option value="Corpo inteiro">Corpo inteiro</option>
-                                </select>
-                            </div>
-                            
-                            <label for="exercise_id">Exercício*</label>
-                            <select id="exercise_id" name="exercise_id" required>
-                                <option value="">Selecione um exercício</option>
-                                {% for exercise in exercises %}
-                                <option value="{{ exercise.id }}" data-muscle="{{ exercise.muscle_group }}">
-                                    {{ exercise.name }} ({{ exercise.muscle_group }})
-                                </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="order">Ordem</label>
-                            <input type="number" id="order" name="order" min="1" value="{{ workout_exercises|length + 1 }}">
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="sets">Séries*</label>
-                            <input type="number" id="sets" name="sets" min="1" max="20" value="3" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="reps">Repetições*</label>
-                            <input type="text" id="reps" name="reps" placeholder="Ex: 12, 10-12, ou 12,10,8" value="12" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="rest_time">Descanso (segundos)*</label>
-                            <input type="number" id="rest_time" name="rest_time" min="0" max="300" value="60" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="notes">Observações</label>
-                        <textarea id="notes" name="notes" placeholder="Técnica, variações, progressão de carga..."></textarea>
-                    </div>
-                    
-                    <div class="button-container">
-                        <button id="cancelEditBtn" type="button" class="button secondary" style="display: none;">Cancelar Edição</button>
-                        <button type="submit" class="button" id="submitBtn">Adicionar Exercício</button>
-                    </div>
-                </form>
-            </div>
         </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-dumbbell"></i>
+            </div>
+            <h3>Nenhum exercício adicionado</h3>
+            <p>Use o formulário abaixo para adicionar exercícios ao treino.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Formulário de exercícios -->
+<div class="exercise-form">
+    <div class="exercise-form-header">
+        <h3 class="exercise-form-title" id="formTitle">
+            <i class="fas fa-plus-circle"></i> Adicionar Exercício
+        </h3>
     </div>
     
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Elementos do DOM
-            const searchBox = document.getElementById('exerciseSearch');
-            const muscleFilter = document.getElementById('muscleFilter');
-            const exerciseSelect = document.getElementById('exercise_id');
-            const exerciseForm = document.getElementById('exerciseForm');
-            const formTitle = document.getElementById('formTitle');
+    <form id="exerciseForm" method="POST" action="{{ url_for('workout_edit', workout_id=workout.id) }}">
+        <input type="hidden" id="edit_mode" name="edit_mode" value="0">
+        <input type="hidden" id="exercise_id_to_edit" name="exercise_id_to_edit" value="">
+        
+        <div class="form-row">
+            <div class="form-group" style="flex: 3;">
+                <label class="form-label">Buscar Exercício</label>
+                <input type="text" id="exerciseSearch" class="form-control" placeholder="Digite para buscar exercícios...">
+                
+                <div class="filter-container">
+                    <select id="muscleFilter" class="form-control">
+                        <option value="">Todos os Grupos Musculares</option>
+                        <option value="Peito">Peito</option>
+                        <option value="Costas">Costas</option>
+                        <option value="Ombros">Ombros</option>
+                        <option value="Bíceps">Bíceps</option>
+                        <option value="Tríceps">Tríceps</option>
+                        <option value="Pernas">Pernas</option>
+                        <option value="Glúteos">Glúteos</option>
+                        <option value="Abdômen">Abdômen</option>
+                        <option value="Panturrilha">Panturrilha</option>
+                        <option value="Lombar">Lombar</option>
+                        <option value="Cardio">Cardio</option>
+                        <option value="Corpo inteiro">Corpo inteiro</option>
+                    </select>
+                </div>
+                
+                <label for="exercise_id" class="form-label">Exercício*</label>
+                <select id="exercise_id" name="exercise_id" class="form-control" required>
+                    <option value="">Selecione um exercício</option>
+                    {% for exercise in exercises %}
+                    <option value="{{ exercise.id }}" data-muscle="{{ exercise.muscle_group }}">
+                        {{ exercise.name }} ({{ exercise.muscle_group }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label for="order" class="form-label">Ordem</label>
+                <input type="number" id="order" name="order" class="form-control" min="1" value="{{ workout_exercises|length + 1 }}">
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="sets" class="form-label">Séries*</label>
+                <input type="number" id="sets" name="sets" class="form-control" min="1" max="20" value="3" required>
+            </div>
+            <div class="form-group">
+                <label for="reps" class="form-label">Repetições*</label>
+                <input type="text" id="reps" name="reps" class="form-control" placeholder="Ex: 12, 10-12, ou 12,10,8" value="12" required>
+            </div>
+            <div class="form-group">
+                <label for="rest_time" class="form-label">Descanso (segundos)*</label>
+                <input type="number" id="rest_time" name="rest_time" class="form-control" min="0" max="300" value="60" required>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="notes" class="form-label">Observações</label>
+            <textarea id="notes" name="notes" class="form-control" placeholder="Técnica, variações, progressão de carga..."></textarea>
+        </div>
+        
+        <div class="form-buttons" style="text-align: right; margin-top: 20px;">
+            <button id="cancelEditBtn" type="button" class="btn btn-secondary" style="display: none;">Cancelar Edição</button>
+            <button type="submit" class="btn btn-primary" id="submitBtn">Adicionar Exercício</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block additional_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Elementos do DOM
+        const searchBox = document.getElementById('exerciseSearch');
+        const muscleFilter = document.getElementById('muscleFilter');
+        const exerciseSelect = document.getElementById('exercise_id');
+        const exerciseForm = document.getElementById('exerciseForm');
+        const formTitle = document.getElementById('formTitle');
+        
+        // Armazenar as opções originais
+        const allOptions = Array.from(exerciseSelect.options).slice(1); // Ignorar a primeira opção "Selecione"
+        
+        // Função para filtrar exercícios
+        function filterExercises() {
+            const searchTerm = searchBox.value.toLowerCase();
+            const selectedMuscle = muscleFilter.value;
             
-            // Armazenar as opções originais
-            const allOptions = Array.from(exerciseSelect.options).slice(1); // Ignorar a primeira opção "Selecione"
-            
-            // Função para filtrar exercícios
-            function filterExercises() {
-                const searchTerm = searchBox.value.toLowerCase();
-                const selectedMuscle = muscleFilter.value;
-                
-                // Remover todas as opções existentes, exceto a primeira (Selecione um exercício)
-                while (exerciseSelect.options.length > 1) {
-                    exerciseSelect.remove(1);
-                }
-                
-                // Adicionar opções filtradas
-                allOptions.forEach(option => {
-                    const optionText = option.text.toLowerCase();
-                    const optionMuscle = option.getAttribute('data-muscle');
-                    
-                    const matchesSearch = !searchTerm || optionText.includes(searchTerm);
-                    const matchesMuscle = !selectedMuscle || optionMuscle === selectedMuscle;
-                    
-                    if (matchesSearch && matchesMuscle) {
-                        exerciseSelect.add(option.cloneNode(true));
-                    }
-                });
-                
-                // Mostrar mensagem se não houver resultados
-                if (exerciseSelect.options.length === 1) {
-                    const noResultOption = new Option('Nenhum exercício encontrado', '');
-                    noResultOption.disabled = true;
-                    exerciseSelect.add(noResultOption);
-                }
-                
-                // Mensagem de depuração
-                console.log(`Filtrado: ${exerciseSelect.options.length - 1} exercícios encontrados`);
+            // Remover todas as opções existentes, exceto a primeira (Selecione um exercício)
+            while (exerciseSelect.options.length > 1) {
+                exerciseSelect.remove(1);
             }
             
-            // Eventos para filtrar exercícios
-            searchBox.addEventListener('keyup', filterExercises);
-            muscleFilter.addEventListener('change', filterExercises);
-            
-            // Botão para cancelar edição e voltar para modo de adição
-            document.getElementById('cancelEditBtn').addEventListener('click', function(e) {
-                e.preventDefault();
-                resetForm();
+            // Adicionar opções filtradas
+            allOptions.forEach(option => {
+                const optionText = option.text.toLowerCase();
+                const optionMuscle = option.getAttribute('data-muscle');
+                
+                const matchesSearch = !searchTerm || optionText.includes(searchTerm);
+                const matchesMuscle = !selectedMuscle || optionMuscle === selectedMuscle;
+                
+                if (matchesSearch && matchesMuscle) {
+                    exerciseSelect.add(option.cloneNode(true));
+                }
             });
             
-            // Atualizar texto do botão de submit baseado no modo
-            const editMode = document.getElementById('edit_mode');
-            const submitBtn = document.getElementById('submitBtn');
-            
-            // Observer para detectar mudanças no valor do campo edit_mode
-            const observer = new MutationObserver(function(mutations) {
-                mutations.forEach(function(mutation) {
-                    if (mutation.type === "attributes" && mutation.attributeName === "value") {
-                        if (editMode.value === "1") {
-                            submitBtn.textContent = "Salvar Alterações";
-                        } else {
-                            submitBtn.textContent = "Adicionar Exercício";
-                        }
-                    }
-                });
-            });
-            
-            // Configurar observer para monitorar mudanças no atributo value
-            observer.observe(editMode, { attributes: true });
+            // Mostrar mensagem se não houver resultados
+            if (exerciseSelect.options.length === 1) {
+                const noResultOption = new Option('Nenhum exercício encontrado', '');
+                noResultOption.disabled = true;
+                exerciseSelect.add(noResultOption);
+            }
+        }
+        
+        // Eventos para filtrar exercícios
+        searchBox.addEventListener('keyup', filterExercises);
+        muscleFilter.addEventListener('change', filterExercises);
+        
+        // Botão para cancelar edição e voltar para modo de adição
+        document.getElementById('cancelEditBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            resetForm();
         });
         
-        // Função para editar um exercício existente
-        function editExercise(workoutExerciseId, order, sets, reps, restTime, notes, exerciseId) {
-            // Atualizar título do formulário
-            document.getElementById('formTitle').textContent = 'Editar Exercício';
-            
-            // Preencher o formulário com os dados do exercício
-            document.getElementById('exercise_id').value = exerciseId;
-            document.getElementById('order').value = order;
-            document.getElementById('sets').value = sets;
-            document.getElementById('reps').value = reps;
-            document.getElementById('rest_time').value = restTime;
-            document.getElementById('notes').value = notes;
-            
-            // Configurar o modo de edição
-            document.getElementById('edit_mode').value = '1';
-            document.getElementById('exercise_id_to_edit').value = workoutExerciseId;
-            
-            // Exibir botão de cancelar edição
-            document.getElementById('cancelEditBtn').style.display = 'inline-block';
-            
-            // Rolar até o formulário
-            document.querySelector('.exercise-form').scrollIntoView({ behavior: 'smooth' });
-        }
+        // Atualizar texto do botão de submit baseado no modo
+        const editMode = document.getElementById('edit_mode');
+        const submitBtn = document.getElementById('submitBtn');
         
-        // Função para resetar o formulário para o modo de adição
-        function resetForm() {
-            // Atualizar título do formulário
-            document.getElementById('formTitle').textContent = 'Adicionar Exercício';
-            
-            // Limpar o formulário
-            document.getElementById('exerciseForm').reset();
-            document.getElementById('order').value = "{{ workout_exercises|length + 1 }}";
-            document.getElementById('edit_mode').value = '0';
-            document.getElementById('exercise_id_to_edit').value = '';
-            
-            // Ocultar botão de cancelar edição
-            document.getElementById('cancelEditBtn').style.display = 'none';
-        }
-    </script>
-</body>
-</html>
+        // Observer para detectar mudanças no valor do campo edit_mode
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === "attributes" && mutation.attributeName === "value") {
+                    if (editMode.value === "1") {
+                        submitBtn.textContent = "Salvar Alterações";
+                        submitBtn.innerHTML = '<i class="fas fa-save"></i> Salvar Alterações';
+                    } else {
+                        submitBtn.textContent = "Adicionar Exercício";
+                        submitBtn.innerHTML = '<i class="fas fa-plus"></i> Adicionar Exercício';
+                    }
+                }
+            });
+        });
+        
+        // Configurar observer para monitorar mudanças no atributo value
+        observer.observe(editMode, { attributes: true });
+    });
+    
+    // Função para editar um exercício existente
+    function editExercise(workoutExerciseId, order, sets, reps, restTime, notes, exerciseId) {
+        // Atualizar título do formulário
+        document.getElementById('formTitle').innerHTML = '<i class="fas fa-edit"></i> Editar Exercício';
+        
+        // Rolar até o formulário
+        document.querySelector('.exercise-form').scrollIntoView({ behavior: 'smooth' });
+        
+        // Preencher o formulário com os dados do exercício
+        document.getElementById('exercise_id').value = exerciseId;
+        document.getElementById('order').value = order;
+        document.getElementById('sets').value = sets;
+        document.getElementById('reps').value = reps;
+        document.getElementById('rest_time').value = restTime;
+        document.getElementById('notes').value = notes;
+        
+        // Configurar o modo de edição
+        document.getElementById('edit_mode').value = '1';
+        document.getElementById('exercise_id_to_edit').value = workoutExerciseId;
+        
+        // Exibir botão de cancelar edição
+        document.getElementById('cancelEditBtn').style.display = 'inline-block';
+    }
+    
+    // Função para resetar o formulário para o modo de adição
+    function resetForm() {
+        // Atualizar título do formulário
+        document.getElementById('formTitle').innerHTML = '<i class="fas fa-plus-circle"></i> Adicionar Exercício';
+        
+        // Limpar o formulário
+        document.getElementById('exerciseForm').reset();
+        document.getElementById('order').value = "{{ workout_exercises|length + 1 }}";
+        document.getElementById('edit_mode').value = '0';
+        document.getElementById('exercise_id_to_edit').value = '';
+        
+        // Ocultar botão de cancelar edição
+        document.getElementById('cancelEditBtn').style.display = 'none';
+    }
+</script>
+{% endblock %}
