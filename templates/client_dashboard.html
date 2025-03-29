@@ -229,8 +229,8 @@
     </div>
 </div>
 
-<!-- Treinos disponíveis -->
-<h2><i class="fas fa-dumbbell"></i> Meus Treinos</h2>
+<!-- Para a seção de treinos -->
+<h2 id="meus-treinos"><i class="fas fa-dumbbell"></i> Meus Treinos</h2>
 
 {% if workouts %}
 <div class="workout-cards">
@@ -270,7 +270,7 @@
 {% endif %}
 
 <!-- Seção de progresso -->
-<div class="progress-section">
+<div id="progresso" class="progress-section">
     <h2><i class="fas fa-chart-line"></i> Progresso Recente</h2>
     
     <div class="card">
@@ -328,4 +328,44 @@
         });
     });
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Remover classe ativa de todos os links
+        function clearActiveLinks() {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+        }
+        
+        // Função para verificar o hash atual e ativar o link correspondente
+        function checkHash() {
+            clearActiveLinks();
+            
+            // Verificar o hash na URL
+            const hash = window.location.hash;
+            if (hash === '#meus-treinos') {
+                document.getElementById('link-meus-treinos').classList.add('active');
+            } else if (hash === '#progresso') {
+                document.getElementById('link-progresso').classList.add('active');
+            } else if (hash === '' || hash === '#') {
+                // Se não houver hash, não ative nenhum link específico
+                // O link "Início" já deve estar ativo por padrão
+            }
+        }
+        
+        // Verificar hash inicial
+        checkHash();
+        
+        // Rechecar quando o hash mudar
+        window.addEventListener('hashchange', checkHash);
+        
+        // Adicionar event listeners aos links para definir classe ativa ao clicar
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Não limpar o estado ativo aqui, deixe a função checkHash lidar com isso
+                // Isso permite que o sistema de navegação padrão do site funcione
+            });
+        });
+    });
+    </script>
 {% endblock %}

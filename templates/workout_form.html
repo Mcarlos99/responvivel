@@ -1,194 +1,283 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MegaPersonal - Novo Treino</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f7f6;
-            margin: 0;
-            padding: 0;
+{% extends "base.html" %}
+
+{% block title %}MegaPersonal - Novo Treino{% endblock %}
+
+{% block page_title %}Criar Novo Treino{% endblock %}
+
+{% block page_actions %}
+<a href="{{ url_for('client_detail', client_id=client.id) }}" class="btn btn-secondary">
+    <i class="fas fa-arrow-left"></i> Voltar para Cliente
+</a>
+{% endblock %}
+
+{% block additional_styles %}
+<style>
+    .client-info-card {
+        background-color: var(--primary-bg);
+        border-radius: var(--border-radius);
+        padding: 20px;
+        margin-bottom: 25px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .client-details {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .client-name {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 0 0 5px;
+        color: var(--primary-dark);
+    }
+    
+    .client-goal {
+        color: var(--gray);
+        margin: 0;
+    }
+    
+    .client-metrics {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .client-metric {
+        background-color: white;
+        border-radius: var(--border-radius);
+        padding: 8px 15px;
+        text-align: center;
+        min-width: 80px;
+        box-shadow: var(--box-shadow);
+    }
+    
+    .metric-value {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin: 0;
+    }
+    
+    .metric-label {
+        font-size: 0.75rem;
+        color: var(--gray);
+        margin: 0;
+    }
+    
+    .workout-form-container {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 25px;
+        margin-bottom: 30px;
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    .form-section {
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--gray-lighter);
+    }
+    
+    .form-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    
+    .section-title {
+        color: var(--primary-dark);
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .section-title i {
+        margin-right: 8px;
+        color: var(--primary);
+    }
+    
+    .form-tip {
+        background-color: var(--primary-bg);
+        border-left: 3px solid var(--primary);
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    }
+    
+    .form-tip-title {
+        font-weight: 600;
+        color: var(--primary-dark);
+        margin: 0 0 8px 0;
+        display: flex;
+        align-items: center;
+    }
+    
+    .form-tip-title i {
+        margin-right: 8px;
+    }
+    
+    .form-tip-content {
+        color: var(--gray);
+        margin: 0;
+        font-size: 0.9rem;
+    }
+    
+    .required-field::after {
+        content: "*";
+        color: var(--danger);
+        margin-left: 3px;
+    }
+    
+    @media (max-width: 768px) {
+        .client-info-card {
+            flex-direction: column;
+            align-items: flex-start;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        header {
-            background-color: #db7f34;
-            color: white;
-            padding: 15px 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        .logo h1 {
-            margin: 0;
-        }
-        .user-info {
-            display: flex;
-            align-items: center;
-        }
-        .user-info a {
-            color: white;
-            text-decoration: none;
-            margin-left: 15px;
-        }
-        .user-info a:hover {
-            text-decoration: underline;
-        }
-        .navbar {
-            background-color: #db7f34;
-            padding: 10px 0;
-        }
-        .nav-links {
-            display: flex;
-            list-style: none;
-            margin: 0;
-            padding: 0 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .nav-links li {
-            margin-right: 20px;
-        }
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            padding: 5px 0;
-        }
-        .nav-links a:hover {
-            border-bottom: 2px solid white;
-        }
-        .page-header {
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .form-container {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            padding: 20px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input[type="text"],
-        textarea {
+        
+        .client-metrics {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
+            justify-content: space-between;
         }
-        textarea {
-            min-height: 100px;
-        }
-        .button-container {
-            margin-top: 20px;
-            text-align: right;
-        }
-        .button {
-            background-color: #db7f34;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .button:hover {
-            background-color: #db7f34;
-        }
-        .button.secondary {
-            background-color: #95a5a6;
-        }
-        .button.secondary:hover {
-            background-color: #7f8c8d;
-        }
-        .client-info {
-            background-color: #f4f7f6;
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-        .client-info p {
-            margin: 0;
-        }
-        .client-info strong {
-            color: #db7f34;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <div class="header-content">
-            <div class="logo">
-                <h1>MegaPersonal</h1>
-            </div>
-            <div class="user-info">
-                <span>Bem-vindo, {{ session.get('trainer_name', 'Treinador') }}</span>
-                <a href="{{ url_for('logout') }}">Sair</a>
-            </div>
-        </div>
-    </header>
-    
-    <nav class="navbar">
-        <ul class="nav-links">
-            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-            <li><a href="{{ url_for('client_list') }}">Clientes</a></li>
-            <li><a href="{{ url_for('exercises') }}">Exercícios</a></li>
-            <li><a href="{{ url_for('workout_templates') }}">Templates de Treino</a></li>
-            <li><a href="{{ url_for('attendance_list') }}">Presenças</a></li>
-        </ul>
-    </nav>
-    
-    <div class="container">
-        <div class="page-header">
-            <h1>Criar Novo Treino</h1>
-            <a href="{{ url_for('client_detail', client_id=client.id) }}" class="button secondary">Voltar para Cliente</a>
-        </div>
         
-        <div class="client-info">
-            <p>Cliente: <strong>{{ client.name }}</strong></p>
-            <p>Objetivo: <strong>{{ client.goal }}</strong></p>
+        .client-metric {
+            flex: 1;
+            min-width: 70px;
+        }
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Informações do Cliente -->
+<div class="client-info-card">
+    <div class="client-details">
+        <div class="client-name">{{ client.name }}</div>
+        <div class="client-goal">{{ client.goal }}</div>
+    </div>
+    
+    <div class="client-metrics">
+        {% if client.age %}
+        <div class="client-metric">
+            <p class="metric-value">{{ client.age }}</p>
+            <p class="metric-label">Idade</p>
         </div>
+        {% endif %}
         
-        <div class="form-container">
-            <form method="POST" action="{{ url_for('workout_new', client_id=client.id) }}">
-                <div class="form-group">
-                    <label for="name">Nome do Treino*</label>
-                    <input type="text" id="name" name="name" required placeholder="Ex: Treino A - Peito e Tríceps">
-                </div>
-                
-                <div class="form-group">
-                    <label for="description">Descrição/Observações</label>
-                    <textarea id="description" name="description" placeholder="Instruções gerais, foco do treino, notas importantes..."></textarea>
-                </div>
-                
-                <div class="button-container">
-                    <a href="{{ url_for('client_detail', client_id=client.id) }}" class="button secondary">Cancelar</a>
-                    <button type="submit" class="button">Continuar para Adicionar Exercícios</button>
-                </div>
-            </form>
+        {% if client.height %}
+        <div class="client-metric">
+            <p class="metric-value">{{ client.height|round(2) }}</p>
+            <p class="metric-label">Altura (m)</p>
+        </div>
+        {% endif %}
+        
+        {% if client.weight %}
+        <div class="client-metric">
+            <p class="metric-value">{{ client.weight|round(1) }}</p>
+            <p class="metric-label">Peso (kg)</p>
+        </div>
+        {% endif %}
+        
+        <div class="client-metric">
+            <p class="metric-value">{{ client.workouts|length }}</p>
+            <p class="metric-label">Treinos</p>
         </div>
     </div>
-</body>
-</html>
+</div>
+
+<!-- Formulário de Treino -->
+<div class="workout-form-container">
+    <div class="form-tip">
+        <div class="form-tip-title">
+            <i class="fas fa-lightbulb"></i> Dica
+        </div>
+        <p class="form-tip-content">
+            Crie um nome claro e objetivo para o treino. Uma boa descrição ajudará você e seu cliente a entenderem o propósito do treino e suas instruções gerais.
+        </p>
+    </div>
+    
+    <form method="POST" action="{{ url_for('workout_new', client_id=client.id) }}">
+        <div class="form-section">
+            <h3 class="section-title">
+                <i class="fas fa-file-alt"></i> Informações Básicas
+            </h3>
+            
+            <div class="form-group">
+                <label for="name" class="form-label required-field">Nome do Treino</label>
+                <input type="text" id="name" name="name" class="form-control" required placeholder="Ex: Treino A - Peito e Tríceps, Treino de Força, etc.">
+            </div>
+            
+            <div class="form-group">
+                <label for="description" class="form-label">Descrição/Observações</label>
+                <textarea id="description" name="description" class="form-control" rows="4" placeholder="Instruções gerais, foco do treino, notas importantes, progressão..."></textarea>
+            </div>
+        </div>
+        
+        <div class="form-buttons" style="text-align: right; margin-top: 20px;">
+            <a href="{{ url_for('client_detail', client_id=client.id) }}" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-arrow-right"></i> Continuar para Adicionar Exercícios
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block additional_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animação de entrada para elementos
+        const formSections = document.querySelectorAll('.form-section');
+        formSections.forEach((section, index) => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(20px)';
+            section.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            
+            setTimeout(() => {
+                section.style.opacity = '1';
+                section.style.transform = 'translateY(0)';
+            }, 100 * index);
+        });
+        
+        // Validação do formulário
+        const workoutForm = document.querySelector('form');
+        workoutForm.addEventListener('submit', function(event) {
+            const nameField = document.getElementById('name');
+            
+            if (!nameField.value.trim()) {
+                event.preventDefault();
+                nameField.classList.add('is-invalid');
+                alert('Por favor, preencha o nome do treino antes de continuar.');
+            }
+        });
+        
+        // Removendo classe de validação ao editar
+        const inputs = document.querySelectorAll('.form-control');
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                if (this.classList.contains('is-invalid')) {
+                    this.classList.remove('is-invalid');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

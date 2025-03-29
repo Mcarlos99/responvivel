@@ -13,6 +13,7 @@
     
     <!-- CSS Base -->
     <style>
+
         :root {
             /* Paleta de cores */
             --primary: #db7f34;
@@ -815,6 +816,7 @@
     {% block additional_styles %}{% endblock %}
 </head>
 <body>
+
     <!-- Header -->
     <header>
         <div class="container">
@@ -885,13 +887,14 @@
     <nav class="navbar">
         <div class="container">
             <ul class="nav-links">
-                <li><a href="{{ url_for('client_dashboard') }}" class="{% if request.endpoint == 'client_dashboard' %}active{% endif %}">
+                <li><a href="{{ url_for('client_dashboard') }}" class="{% if request.endpoint == 'client_dashboard' and not request.path.endswith('#meus-treinos') and not request.path.endswith('#progresso') %}active{% endif %}">
                     <i class="fas fa-home"></i> Início</a>
                 </li>
-                <li><a href="#" class="{% if request.endpoint == 'client_workout_view' %}active{% endif %}">
+                </li>
+                <li><a href="{{ url_for('client_dashboard') }}#meus-treinos" id="link-meus-treinos" class="nav-link">
                     <i class="fas fa-dumbbell"></i> Meus Treinos</a>
                 </li>
-                <li><a href="#" class="{% if request.endpoint == 'client_progress' %}active{% endif %}">
+                <li><a href="{{ url_for('client_dashboard') }}#progresso" id="link-progresso" class="nav-link">
                     <i class="fas fa-chart-line"></i> Progresso</a>
                 </li>
             </ul>
@@ -901,6 +904,7 @@
     
     <!-- Conteúdo Principal -->
     <main>
+        
         <div class="container">
             <!-- Flash Messages -->
             {% with messages = get_flashed_messages(with_categories=true) %}
@@ -979,4 +983,9 @@
     <!-- Scripts JS específicos para a página atual -->
     {% block additional_scripts %}{% endblock %}
 </body>
+<style>
+    html {
+        scroll-padding-top: 120px; /* Ajuste esse valor para o tamanho da sua barra de navegação mais um pouco de espaço */
+    }
+</style>
 </html>
