@@ -649,6 +649,7 @@
 </div>
 
 <!-- Exercise Details Modal -->
+<!-- Exercise Details Modal -->
 <div id="exerciseModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -760,7 +761,7 @@
     let isRunning = false;
     let restTime = 60; // Default rest time in seconds
     
-    // Functions to manage the exercise modal
+    // Function to open the exercise modal
     function openExerciseModal(exerciseId, name, muscleGroup, description, videoUrl, sets, restTimeVal, reps) {
         // Capture exercise info
         currentExerciseId = exerciseId;
@@ -1121,4 +1122,5 @@
             document.getElementById('loadModal').style.display = 'none';
         }
     });
-    {% endblock %}
+</script>
+{% endblock %}
