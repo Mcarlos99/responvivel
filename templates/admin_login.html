@@ -1,106 +1,159 @@
-<!-- Salve como admin_login.html na pasta templates -->
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MegaPersonal - Login Administrativo</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f7f6;
+{% extends "base.html" %}
+
+{% block title %}MegaPersonal - Login Administrativo{% endblock %}
+
+{% block additional_styles %}
+<style>
+    .auth-container {
+        display: flex;
+        min-height: calc(100vh - 140px);
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    
+    .auth-card {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        width: 100%;
+        max-width: 400px;
+        overflow: hidden;
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    .auth-header {
+        text-align: center;
+        padding: 30px 20px;
+        background-color: var(--primary-bg);
+        border-bottom: 1px solid var(--gray-lighter);
+    }
+    
+    .auth-title {
+        color: var(--primary);
+        font-weight: 600;
+        margin: 0;
+        font-size: 1.5rem;
+    }
+    
+    .auth-subtitle {
+        color: var(--gray);
+        margin-top: 5px;
+        font-size: 0.9rem;
+    }
+    
+    .auth-body {
+        padding: 30px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-footer {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 0.9rem;
+        color: var(--gray);
+    }
+    
+    .form-footer a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .form-footer a:hover {
+        text-decoration: underline;
+    }
+    
+    @media (max-width: 480px) {
+        .auth-card {
             margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
         }
-        .login-container {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            width: 350px;
+        
+        .auth-header {
+            padding: 20px 15px;
         }
-        .logo {
-            text-align: center;
-            margin-bottom: 20px;
+        
+        .auth-body {
+            padding: 20px 15px;
         }
-        .logo h1 {
-            color: #db7f34;
-            margin: 0;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #333;
-        }
-        input[type="text"],
-        input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: #db7f34;
-            color: white;
-            border: none;
-            padding: 12px 0;
-            width: 100%;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-        button:hover {
-            background-color: #db7f34;
-        }
-        .error-message {
-            color: #e74c3c;
-            margin-top: 15px;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-    <div class="login-container">
-        <div class="logo">
-            <h1>MegaPersonal</h1>
-            <p>Acesso Administrativo</p>
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1 class="auth-title">MegaPersonal</h1>
+            <p class="auth-subtitle">Acesso Administrativo</p>
         </div>
         
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <div class="flash-messages">
-            {% for category, message in messages %}
-            <div class="error-message">
-                {{ message }}
+        <div class="auth-body">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    <i class="fas fa-exclamation-circle"></i> {{ message }}
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
+            {% endif %}
+            {% endwith %}
+            
+            <form method="POST" action="{{ url_for('admin_login') }}">
+                <div class="form-group">
+                    <label for="username" class="form-label">Usuário</label>
+                    <input type="text" id="username" name="username" class="form-control" required autofocus>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">Senha</label>
+                    <div class="input-group">
+                        <input type="password" id="password" name="password" class="form-control" required>
+                        <div class="input-group-append">
+                            <button type="button" class="password-toggle" data-target="password">
+                                <i class="far fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Entrar
+                </button>
+            </form>
+            
+            <div class="form-footer">
+                <p><a href="{{ url_for('login') }}"><i class="fas fa-arrow-left"></i> Voltar para Login Principal</a></p>
+            </div>
         </div>
-        {% endif %}
-        {% endwith %}
-        
-        <form method="POST" action="{{ url_for('admin_login') }}">
-            <div class="form-group">
-                <label for="username">Usuário</label>
-                <input type="text" id="username" name="username" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="password">Senha</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            
-            <button type="submit">Entrar</button>
-        </form>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}
+
+{% block additional_scripts %}
+<script>
+    // Função para mostrar/ocultar senha
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordToggle = document.querySelector('.password-toggle');
+        if (passwordToggle) {
+            passwordToggle.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const input = document.getElementById(targetId);
+                
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    this.innerHTML = '<i class="far fa-eye-slash"></i>';
+                } else {
+                    input.type = 'password';
+                    this.innerHTML = '<i class="far fa-eye"></i>';
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

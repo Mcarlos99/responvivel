@@ -1,218 +1,227 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MegaPersonal - Novo Template de Treino</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f7f6;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        header {
-            background-color: #db7f34;
-            color: white;
-            padding: 15px 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        .logo h1 {
-            margin: 0;
-        }
-        .user-info {
-            display: flex;
-            align-items: center;
-        }
-        .user-info a {
-            color: white;
-            text-decoration: none;
-            margin-left: 15px;
-        }
-        .user-info a:hover {
-            text-decoration: underline;
-        }
-        .navbar {
-            background-color: #db7f34;
-            padding: 10px 0;
-        }
-        .nav-links {
-            display: flex;
-            list-style: none;
-            margin: 0;
-            padding: 0 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .nav-links li {
-            margin-right: 20px;
-        }
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            padding: 5px 0;
-        }
-        .nav-links a:hover {
-            border-bottom: 2px solid white;
-        }
-        .page-header {
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .form-container {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            padding: 20px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input[type="text"],
-        textarea,
-        select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        textarea {
-            min-height: 120px;
-        }
-        .button-container {
-            margin-top: 20px;
-            text-align: right;
-        }
-        .button {
-            background-color: #db7f34;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .button:hover {
-            background-color: #c26f2e;
-        }
-        .button.secondary {
-            background-color: #95a5a6;
-        }
-        .button.secondary:hover {
-            background-color: #7f8c8d;
-        }
-        .help-text {
-            font-size: 13px;
-            color: #7f8c8d;
-            margin-top: 5px;
-        }
-        .template-info {
-            background-color: #f4f7f6;
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-        .template-info p {
-            margin: 0 0 10px 0;
-        }
-        .template-info .title {
-            font-weight: bold;
-            color: #2c3e50;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <div class="header-content">
-            <div class="logo">
-                <h1>MegaPersonal</h1>
-            </div>
-            <div class="user-info">
-                <span>Bem-vindo, {{ session.get('trainer_name', 'Treinador') }}</span>
-                <a href="{{ url_for('logout') }}">Sair</a>
-            </div>
-        </div>
-    </header>
+{% extends "base.html" %}
+
+{% block title %}MegaPersonal - Novo Template de Treino{% endblock %}
+
+{% block page_title %}Criar Novo Template de Treino{% endblock %}
+
+{% block page_actions %}
+<a href="{{ url_for('workout_templates') }}" class="btn btn-secondary">
+    <i class="fas fa-arrow-left"></i> Voltar para Templates
+</a>
+{% endblock %}
+
+{% block additional_styles %}
+<style>
+    .info-banner {
+        background-color: var(--primary-bg);
+        border-left: 4px solid var(--primary);
+        border-radius: var(--border-radius);
+        padding: 20px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: flex-start;
+    }
     
-    <nav class="navbar">
-        <ul class="nav-links">
-            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-            <li><a href="{{ url_for('client_list') }}">Clientes</a></li>
-            <li><a href="{{ url_for('exercises') }}">Exercícios</a></li>
-            <li><a href="{{ url_for('workout_templates') }}">Templates de Treino</a></li>
-            <li><a href="{{ url_for('attendance_list') }}">Presenças</a></li>
-        </ul>
-    </nav>
+    .info-banner-icon {
+        font-size: 1.8rem;
+        color: var(--primary);
+        margin-right: 15px;
+        margin-top: 3px;
+    }
     
-    <div class="container">
-        <div class="page-header">
-            <h1>Criar Novo Template de Treino</h1>
-            <a href="{{ url_for('workout_templates') }}" class="button secondary">Voltar para Templates</a>
-        </div>
-        
-        <div class="template-info">
-            <p class="title">O que são Templates de Treino?</p>
-            <p>Os templates de treino permitem que você crie modelos de treinos padronizados que podem ser aplicados a múltiplos alunos de forma rápida.</p>
-            <p>Após criar o template, você poderá adicionar exercícios e depois aplicá-lo a qualquer aluno, economizando tempo ao não precisar criar treinos semelhantes do zero.</p>
-        </div>
-        
-        <div class="form-container">
-            <form method="POST" action="{{ url_for('workout_template_new') }}">
-                <div class="form-group">
-                    <label for="name">Nome do Template*</label>
-                    <input type="text" id="name" name="name" required placeholder="Ex: Treino A - Iniciante, Hipertrofia Intermediário, etc.">
-                    <div class="help-text">Escolha um nome descritivo que identifique o propósito do template.</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="description">Descrição/Observações</label>
-                    <textarea id="description" name="description" placeholder="Descreva o objetivo deste template, para qual público-alvo ele foi criado, instruções gerais, etc."></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="category">Categoria</label>
-                    <select id="category" name="category">
-                        <option value="">Selecione uma categoria (opcional)</option>
-                        <option value="iniciante">Iniciante</option>
-                        <option value="intermediario">Intermediário</option>
-                        <option value="avancado">Avançado</option>
-                        <option value="hipertrofia">Hipertrofia</option>
-                        <option value="emagrecimento">Emagrecimento</option>
-                        <option value="resistencia">Resistência</option>
-                        <option value="funcional">Funcional</option>
-                        <option value="outro">Outro</option>
-                    </select>
-                </div>
-                
-                <div class="button-container">
-                    <a href="{{ url_for('workout_templates') }}" class="button secondary">Cancelar</a>
-                    <button type="submit" class="button">Continuar para Adicionar Exercícios</button>
-                </div>
-            </form>
-        </div>
+    .info-banner-content h4 {
+        margin-top: 0;
+        margin-bottom: 10px;
+        color: var(--primary-dark);
+        font-weight: 600;
+    }
+    
+    .info-banner-content p {
+        margin: 0;
+        color: var(--gray);
+    }
+    
+    .template-form-container {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 25px;
+        margin-bottom: 30px;
+    }
+    
+    .form-section {
+        margin-bottom: 25px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: var(--gray-dark);
+    }
+    
+    .form-help {
+        font-size: 0.85rem;
+        color: var(--gray);
+        margin-top: 5px;
+    }
+    
+    .required-field::after {
+        content: "*";
+        color: var(--danger);
+        margin-left: 3px;
+    }
+    
+    .category-selector {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 10px;
+    }
+    
+    .category-option {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        border: 1px solid var(--gray-lighter);
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .category-option:hover {
+        border-color: var(--primary-light);
+        background-color: var(--primary-bg);
+    }
+    
+    .category-option.selected {
+        border-color: var(--primary);
+        background-color: var(--primary-bg);
+    }
+    
+    .category-option input[type="radio"] {
+        margin-right: 10px;
+    }
+    
+    @media (max-width: 768px) {
+        .category-selector {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Information Banner -->
+<div class="info-banner">
+    <div class="info-banner-icon">
+        <i class="fas fa-lightbulb"></i>
     </div>
-</body>
-</html>
+    <div class="info-banner-content">
+        <h4>O que são Templates de Treino?</h4>
+        <p>Os templates de treino permitem que você crie modelos de treinos padronizados que podem ser aplicados a múltiplos alunos de forma rápida. Após criar o template, você poderá adicionar exercícios e depois aplicá-lo a qualquer aluno, economizando tempo ao não precisar criar treinos semelhantes do zero.</p>
+    </div>
+</div>
+
+<!-- Template Form -->
+<div class="template-form-container">
+    <form method="POST" action="{{ url_for('workout_template_new') }}">
+        <div class="form-section">
+            <div class="form-group">
+                <label for="name" class="form-label required-field">Nome do Template</label>
+                <input type="text" id="name" name="name" class="form-control" required placeholder="Ex: Treino A - Iniciante, Hipertrofia Intermediário, etc.">
+                <div class="form-help">Escolha um nome descritivo que identifique o propósito do template.</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="description" class="form-label">Descrição/Observações</label>
+                <textarea id="description" name="description" class="form-control" rows="4" placeholder="Descreva o objetivo deste template, para qual público-alvo ele foi criado, instruções gerais, etc."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Categoria</label>
+                <div class="category-selector">
+                    <label class="category-option">
+                        <input type="radio" name="category" value="iniciante">
+                        <span>Iniciante</span>
+                    </label>
+                    <label class="category-option">
+                        <input type="radio" name="category" value="intermediario">
+                        <span>Intermediário</span>
+                    </label>
+                    <label class="category-option">
+                        <input type="radio" name="category" value="avancado">
+                        <span>Avançado</span>
+                    </label>
+                    <label class="category-option">
+                        <input type="radio" name="category" value="hipertrofia">
+                        <span>Hipertrofia</span>
+                    </label>
+                    <label class="category-option">
+                        <input type="radio" name="category" value="emagrecimento">
+                        <span>Emagrecimento</span>
+                    </label>
+                    <label class="category-option">
+                        <input type="radio" name="category" value="resistencia">
+                        <span>Resistência</span>
+                    </label>
+                    <label class="category-option">
+                        <input type="radio" name="category" value="funcional">
+                        <span>Funcional</span>
+                    </label>
+                    <label class="category-option">
+                        <input type="radio" name="category" value="outro">
+                        <span>Outro</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-buttons" style="text-align: right; margin-top: 20px;">
+            <a href="{{ url_for('workout_templates') }}" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-arrow-right"></i> Continuar para Adicionar Exercícios
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block additional_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animação para entrada de elementos
+        const formSections = document.querySelectorAll('.form-section');
+        formSections.forEach((section, index) => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(20px)';
+            section.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            
+            setTimeout(() => {
+                section.style.opacity = '1';
+                section.style.transform = 'translateY(0)';
+            }, 100 * index);
+        });
+        
+        // Seletor de categoria
+        const categoryOptions = document.querySelectorAll('.category-option');
+        categoryOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // Desmarca todos
+                categoryOptions.forEach(opt => opt.classList.remove('selected'));
+                
+                // Marca o clicado
+                this.classList.add('selected');
+                
+                // Seleciona o radio button
+                const radio = this.querySelector('input[type="radio"]');
+                radio.checked = true;
+            });
+        });
+    });
+</script>
+{% endblock %}
